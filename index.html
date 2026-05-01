@@ -66,7 +66,22 @@
     margin-bottom: 20px;
     padding-bottom: 12px;
     border-bottom: 1px solid #263040;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+  .btn-logout {
+    background: transparent;
+    border: 1px solid #263040;
+    color: #7a9ab5;
+    font-size: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .btn-logout:hover { border-color: #ff4d4d; color: #ff4d4d; }
   .section-label {
     font-size: 11px;
     font-weight: 700;
@@ -1115,11 +1130,19 @@
 
   btn.onclick = checkLogin;
   passInp.onkeydown = (e) => { if(e.key === 'Enter') checkLogin(); };
+
+  window.logout = function() {
+    sessionStorage.removeItem('mds_auth');
+    location.reload();
+  };
 </script>
 <div class="app">
   <!-- SIDEBAR -->
   <div class="sidebar">
-    <div class="sidebar-title">⚙ Dados do Laudo</div>
+    <div class="sidebar-title">
+      <span>⚙ Dados do Laudo</span>
+      <button class="btn-logout" onclick="logout()">Sair</button>
+    </div>
 
     <div class="section-label">Datas</div>
     <div class="section-content">
