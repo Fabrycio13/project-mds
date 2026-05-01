@@ -977,6 +977,41 @@
   .numInputWrapper { display: none !important; }
   #dataAnalise, #dataValidade { color: #e0e0e0 !important; font-weight: 700; }
 
+  /* RESPONSIVE FIXES */
+  @media (max-width: 768px) {
+    .app { flex-direction: column; }
+    .sidebar { 
+      width: 100% !important; 
+      min-width: 100% !important; 
+      height: auto !important; 
+      position: relative !important; 
+      border-right: none !important;
+      border-bottom: 1px solid #263040;
+    }
+    .resizer { display: none; }
+    .preview-area { 
+      width: 100%; 
+      padding: 20px 10px; 
+      overflow-x: auto; 
+    }
+    #laudo {
+      transform: scale(0.42); /* Ajustado para caber em telas de 320px+ */
+      transform-origin: top center;
+      margin: 0 auto;
+    }
+    /* Container para evitar que o laudo cortado ou com espaço sobrando */
+    .preview-area {
+      min-height: 520px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .preview-header { font-size: 16px; margin-bottom: 10px; width: 100%; }
+    .login-card { width: 90% !important; padding: 25px !important; }
+    .field input, .field select { height: 44px; font-size: 16px; } /* Melhora toque no mobile */
+  }
+
   /* LOGIN GATE */
   #login-gate {
     position: fixed;
