@@ -1292,16 +1292,19 @@
         <div class="field"><label>1ª Prestação</label><input type="text" id="prestacao" placeholder="R$ 0,00"></div>
         <div class="field"><label>Parcela SIRIC (30%)</label><input type="text" id="siric" placeholder="R$ 0,00"></div>
       </div>
-      <div class="field"><label>Enquadramento / Faixa</label>
-        <select id="enquadramento">
-          <option selected disabled value="">SELECIONE</option>
-          <option>Faixa 1 - (Renda até 3.200,00)</option>
-          <option>Faixa 2 (Renda de 3.200,01 a 5.000,00)</option>
-          <option>Faixa 3 (Renda de 5.000,01 a 9.600,00)</option>
-          <option>Faixa 4 (Renda de 9.600,01 a 13.000,00)</option>
-          <option>SBPE</option>
-          <option>PRO COTISTA</option>
-        </select>
+      <div class="row2">
+        <div class="field"><label>Enquadramento / Faixa</label>
+          <select id="enquadramento">
+            <option selected disabled value="">SELECIONE</option>
+            <option>Faixa 1 - (Renda até 3.200,00)</option>
+            <option>Faixa 2 (Renda de 3.200,01 a 5.000,00)</option>
+            <option>Faixa 3 (Renda de 5.000,01 a 9.600,00)</option>
+            <option>Faixa 4 (Renda de 9.600,01 a 13.000,00)</option>
+            <option>SBPE</option>
+            <option>PRO COTISTA</option>
+          </select>
+        </div>
+        <div class="field"><label>Cota SIRIC (%)</label><input type="text" id="cotaSiric" readonly placeholder="0%"></div>
       </div>
     </div>
 
@@ -1607,10 +1610,11 @@
             <table class="l-cond-table">
               <tr><td>ENQUADRAMENTO / FAIXA</td><td id="v-enquadramento">-</td></tr>
               <tr><td>PRAZO DO FINANCIAMENTO</td><td id="v-prazo">-</td></tr>
-              <tr><td>TABELA</td><td id="v-tabela">PRICE</td></tr>
+              <tr><td>📉 TABELA</td><td id="v-tabela">-</td></tr>
+              <tr><td>📊 COTA SIRIC (%)</td><td id="v-cotaSiric">-</td></tr>
               <tr class="l-prestacao-row"><td>1ª PRESTAÇÃO (FINANCIAMENTO)</td><td id="v-prestacao">-</td></tr>
               <tr class="l-siric-row"><td><span class="l-star">★</span> PARCELA SIRIC (30%)</td><td><b id="v-siric">-</b></td></tr>
-              <tr class="l-siric-row"><td>COTA SIRIC</td><td>30%</td></tr>
+              <tr class="l-siric-row"><td>COTA SIRIC</td><td id="v-cotaSiric2">-</td></tr>
               <tr><td>JUROS EFETIVOS (a.a.)</td><td id="v-juros2">-</td></tr>
 
             </table>
@@ -1835,6 +1839,7 @@ function bindRenda() {
     if (document.getElementById('v-rendaTotal2')) {
       document.getElementById('v-rendaTotal2').textContent = total.value;
     }
+    if (typeof calculateCotaSiric === 'function') calculateCotaSiric();
   };
 
   const updatePreview = (inputId, previewId) => {
@@ -1901,9 +1906,37 @@ function bindCondicoes() {
   };
 
   [vFinanc, vSubsidio, vFGTS, vAval, vPrestacao, vSiric].forEach(el => {
-    if (el) el.addEventListener('input', update);
+    if (el) el.addEventListener('input', () => {
+      update();
+      calculateCotaSiric();
+    });
   });
   update();
+  calculateCotaSiric();
+}
+
+function calculateCotaSiric() {
+  const vSiric = document.getElementById('siric');
+  const vRenda = document.getElementById('rendaTotal');
+  const vCotaSiric = document.getElementById('cotaSiric');
+  const vCotaSiricPrev = document.getElementById('v-cotaSiric');
+
+  const parse = (v) => parseFloat(v.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+  
+  const siricNum = parse(vSiric.value);
+  const rendaNum = parse(vRenda.value);
+
+  if (rendaNum > 0) {
+    const cota = (siricNum / rendaNum) * 100;
+    const cotaStr = Math.round(cota) + '%';
+    vCotaSiric.value = cotaStr;
+    if (vCotaSiricPrev) vCotaSiricPrev.textContent = cotaStr;
+    if (document.getElementById('v-cotaSiric2')) document.getElementById('v-cotaSiric2').textContent = cotaStr;
+  } else {
+    vCotaSiric.value = '0%';
+    if (vCotaSiricPrev) vCotaSiricPrev.textContent = '-';
+    if (document.getElementById('v-cotaSiric2')) document.getElementById('v-cotaSiric2').textContent = '-';
+  }
 }
 
 // Update Proponent Preview Selects
@@ -2168,11 +2201,10 @@ function initCustomSelects() {
       else if (txt === 'AV. CONDICIONADA SCR BACEN') bColor = '#00acc1';
       else if (txt.includes('PENDÊNCIA') || txt.includes('CONDICIONADA')) bColor = '#ff9800';
       else if (txt === 'PRONTO') bColor = '#2196f3';
-      else if (txt === 'USADO') bColor = '#009688';
-      else if (txt === 'REFORMA') bColor = '#607d8b';
-      else if (txt === 'PLANTA') bColor = '#9c27b0';
-      
-      // Faixas MCMV (Both simplified and full text versions)
+      else if (txt.includes('Faixa 1')) bColor = '#f44336';
+      else if (txt.includes('Faixa 2')) bColor = '#ff9800';
+      else if (txt.includes('Faixa 3')) bColor = '#ffeb3b';
+      else if (txt.includes('Faixa 4')) bColor = '#4caf50';
       else if (txt.includes('FAIXA 1')) bColor = '#f44336';
       else if (txt.includes('FAIXA 2')) bColor = '#ff9800';
       else if (txt.includes('FAIXA 3')) bColor = '#ffeb3b';
