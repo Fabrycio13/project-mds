@@ -976,9 +976,98 @@
   .flatpickr-calendar:before, .flatpickr-calendar:after { display: none !important; }
   .numInputWrapper { display: none !important; }
   #dataAnalise, #dataValidade { color: #e0e0e0 !important; font-weight: 700; }
+
+  /* LOGIN GATE */
+  #login-gate {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0a1018;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  .login-card {
+    background: #161f2a;
+    padding: 40px;
+    border-radius: 16px;
+    border: 1px solid #263040;
+    width: 350px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+  .login-card h2 { color: #c9a84c; margin-bottom: 20px; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
+  .login-field { margin-bottom: 15px; text-align: left; }
+  .login-field label { display: block; font-size: 11px; color: #7a9ab5; margin-bottom: 6px; text-transform: uppercase; }
+  .login-field input {
+    width: 100%;
+    height: 40px;
+    padding: 0 12px;
+    background: #0f1923;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    color: #fff;
+    outline: none;
+  }
+  .login-field input:focus { border-color: #c9a84c; }
+  .btn-login {
+    width: 100%;
+    padding: 12px;
+    background: #c9a84c;
+    color: #0f1923;
+    border: none;
+    border-radius: 8px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  .login-error { color: #ff4d4d; font-size: 12px; margin-top: 10px; display: none; }
 </style>
 </head>
 <body>
+<div id="login-gate">
+  <div class="login-card">
+    <h2>Acesso Interno</h2>
+    <div class="login-field">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="Usuário">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••">
+    </div>
+    <button class="btn-login" id="login-btn">Entrar</button>
+    <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+  </div>
+</div>
+
+<script type="module">
+  const EXPECTED_USER = import.meta.env.VITE_ACCESS_USER;
+  const EXPECTED_PASS = import.meta.env.VITE_ACCESS_PASSWORD;
+
+  const gate = document.getElementById('login-gate');
+  const userInp = document.getElementById('login-user');
+  const passInp = document.getElementById('login-pass');
+  const btn = document.getElementById('login-btn');
+  const error = document.getElementById('login-error');
+
+  function checkLogin() {
+    if (userInp.value === EXPECTED_USER && passInp.value === EXPECTED_PASS) {
+      gate.style.display = 'none';
+      sessionStorage.setItem('mds_auth', 'true');
+    } else {
+      error.style.display = 'block';
+    }
+  }
+
+  if (sessionStorage.getItem('mds_auth') === 'true') {
+    gate.style.display = 'none';
+  }
+
+  btn.onclick = checkLogin;
+  passInp.onkeydown = (e) => { if(e.key === 'Enter') checkLogin(); };
+</script>
 <div class="app">
   <!-- SIDEBAR -->
   <div class="sidebar">
