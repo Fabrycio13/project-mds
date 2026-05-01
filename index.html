@@ -2141,7 +2141,7 @@ async function gerarPDF() {
   document.addEventListener('mousemove', (e) => {
     if (!isResizing) return;
     const newWidth = e.clientX;
-    if (newWidth > 300 && newWidth < 800) {
+    if (newWidth > 300 && newWidth < 1200) {
       sidebar.style.width = newWidth + 'px';
       sidebar.style.minWidth = newWidth + 'px';
     }
