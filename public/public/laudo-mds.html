@@ -1,0 +1,1982 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Laudo - MDS Crédito Imobiliário</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f1923; color: #e0e0e0; min-height: 100vh; }
+
+  .app { display: flex; gap: 0; background: #0a1018; }
+
+  /* SIDEBAR FORM */
+  /* Toggle Switch */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 34px;
+    height: 18px;
+  }
+  .toggle-switch input { opacity: 0; width: 0; height: 0; }
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #263040;
+    transition: .4s;
+    border-radius: 34px;
+  }
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 12px;
+    width: 12px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  input:checked + .toggle-slider { background-color: #c9a84c; }
+  input:checked + .toggle-slider:before { transform: translateX(16px); }
+
+  .sidebar {
+    width: 35%;
+    min-width: 350px;
+    background: #161f2a;
+    border-right: 1px solid #263040;
+    padding: 24px 20px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+  .sidebar-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #c9a84c;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #263040;
+  }
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #c9a84c;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 20px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    user-select: none;
+    transition: opacity 0.2s;
+  }
+  .section-label:hover { opacity: 0.8; }
+  .section-label::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-right: 2px solid #c9a84c;
+    border-bottom: 2px solid #c9a84c;
+    transform: rotate(45deg);
+    margin-right: 12px;
+    transition: transform 0.3s;
+    margin-bottom: 2px;
+  }
+  .section-label.collapsed::before { transform: rotate(-45deg); }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #263040; }
+
+  .section-content {
+    overflow: visible;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+    max-height: 2000px;
+    opacity: 1;
+  }
+  .section-label.collapsed + .section-content,
+  .section-label.collapsed + #p2-fields .section-content {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 11px; color: #7a9ab5; margin-bottom: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field input, .field select {
+    width: 100%;
+    height: 34px;
+    padding: 0 10px;
+    background: #0f1923;
+    border: 1px solid #263040;
+    border-radius: 6px;
+    color: #e0e0e0;
+    font-size: 13px;
+    transition: border-color 0.2s;
+    outline: none;
+    appearance: none;
+  }
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23c9a84c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 14px;
+    padding-right: 34px;
+  }
+  .field input:focus, .field select:focus { border-color: #c9a84c; }
+  .field select option { background: #0f1923; color: #fff; }
+  .field input[readonly] {
+    background: #15202b; 
+    color: #c9a84c; 
+    border-color: #c9a84c;
+    cursor: not-allowed;
+    font-weight: 800;
+  }
+
+  /* CUSTOM SELECT PREMIUM */
+  .custom-select-container {
+    position: relative;
+    width: 100%;
+  }
+  .custom-select-trigger {
+    width: 100%;
+    height: 34px;
+    padding: 0 12px;
+    background: #0f1923;
+    border: 1px solid #263040;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .custom-select-trigger:hover { border-color: #c9a84c; }
+  .custom-select-trigger::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-right: 2px solid #c9a84c;
+    border-bottom: 2px solid #c9a84c;
+    transform: rotate(45deg);
+    margin-bottom: 3px;
+    transition: transform 0.3s;
+  }
+  .custom-select-container.open .custom-select-trigger::after { transform: rotate(-135deg); margin-bottom: -3px; }
+  .custom-select-container.open .custom-select-trigger { border-color: #c9a84c; box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.1); }
+
+  .custom-select-options {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    width: 100%;
+    background: #1a2634;
+    border: 1px solid #263040;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    z-index: 1000;
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 6px;
+  }
+  .custom-select-container.open .custom-select-options {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .custom-select-option {
+    padding: 10px 12px;
+    color: #b0c4d8;
+    font-size: 13px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .custom-select-option:hover {
+    background: #253345;
+    color: #fff;
+  }
+  .custom-select-option.selected {
+    background: #c9a84c22;
+    color: #c9a84c;
+    font-weight: 600;
+  }
+  .custom-select-option::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--bullet-color, #b0c4d855);
+    flex-shrink: 0;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+  }
+
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+  .btn-generate {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #c9a84c, #e8c96d);
+    color: #0f1923;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn-generate:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-generate:active { transform: translateY(0); }
+
+  /* PREVIEW AREA */
+  .preview-area {
+    flex: 1;
+    padding: 40px 20px;
+    background: #0a1018;
+  }
+
+  /* SCROLLBARS GLOBAL */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #0f1923;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #c9a84c;
+    border-radius: 10px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #e8c96d;
+  }
+
+  /* RESIZER */
+  .resizer {
+    width: 4px;
+    cursor: col-resize;
+    background: #263040;
+    transition: background 0.2s;
+    z-index: 100;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+  }
+  .resizer:hover, .resizer.dragging {
+    background: #c9a84c;
+    box-shadow: 0 0 10px rgba(201, 168, 76, 0.4);
+  }
+  .preview-header {
+    font-size: 22px;
+    color: #c9a84c;
+    text-transform: uppercase;
+    letter-spacing: 4px;
+    margin: 0 auto 30px auto;
+    max-width: 794px;
+    display: block;
+    text-align: center;
+    font-weight: 800;
+  }
+
+  /* LAUDO DOCUMENT */
+  #laudo {
+    width: 794px;
+    background: #fff;
+    color: #1a1a1a;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+    margin: 0 auto;
+    transform-origin: top center;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* LAUDO STYLES */
+  .l-header {
+    background: #fff;
+    height: 100px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    overflow: hidden; /* Volta a esconder o que sai fora */
+    padding: 0;
+    z-index: 10;
+  }
+  .l-logo-area { 
+    display: flex; 
+    align-items: center; 
+    padding-left: 24px;
+    z-index: 1;
+  }
+  .l-logo-img {
+    height: 85px;
+    width: 200px; 
+    object-fit: contain;
+    object-position: center;
+    margin-top: 8px; /* Move o logo para baixo sem alterar o header */
+  }
+  .l-title { 
+    color: #0d2137; 
+    font-size: 24px; 
+    font-weight: 800; 
+    letter-spacing: 2px; 
+    text-align: center; 
+    flex: 1;
+    z-index: 1;
+  }
+  
+  .l-header-right {
+    height: 100%;
+    width: 220px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 35px;
+  }
+  
+  .l-dates-bg {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #0d2137;
+    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+    z-index: 0;
+  }
+  
+  .l-dates-line {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 17px; /* Um pouco mais encostada no azul, conforme pedido */
+    width: 4px; /* Linha de cobre mais grossa */
+    background: #d4af37; 
+    transform: skewX(-12.4deg);
+    transform-origin: top;
+    z-index: 2;
+  }
+  
+  .l-dates { 
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: auto;
+  }
+  .l-date-box { 
+    display: flex; 
+    align-items: center; 
+    gap: 15px;
+    width: 100%;
+  }
+  .l-date-text {
+    text-align: left;
+  }
+  .l-date-label { 
+    color: #fff; 
+    font-size: 8px; 
+    font-weight: 400; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    opacity: 0.8;
+  }
+  .l-date-value { 
+    color: #fff; 
+    font-size: 14px; 
+    font-weight: 800; 
+  }
+  .l-date-icon { 
+    width: 32px; 
+    height: 32px; 
+    color: #c9a84c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+
+  .l-info-bar {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr 1.2fr 1fr; /* Mais espaço para o município */
+    background: #fff;
+    border-top: 1px solid #0d2137; /* Linha fina azul escuro */
+    border-bottom: 1px solid #dde3ea;
+    margin-top: 8px; /* Espaço para não encostar no header */
+    margin-bottom: 15px;
+    height: 60px;
+    width: 100%;
+  }
+
+  .l-info-item {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 8px;
+    position: relative;
+    overflow: visible; /* Alterado de hidden para garantir que o separador apareça */
+  }
+
+  .l-info-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 55%; /* Altura reduzida para não encostar */
+    width: 1px;
+    background: #dde3ea;
+    animation: separatorReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .l-info-item:last-child {
+    border-right: none;
+  }
+  .l-info-icon {
+    width: 36px;
+    height: 36px;
+    color: #0d2137;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .l-info-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .l-info-label { 
+    font-size: 8.5px; 
+    color: #666; 
+    text-transform: uppercase; 
+    letter-spacing: 0.3px; 
+    font-weight: 700; 
+    margin-bottom: 1px;
+    white-space: nowrap;
+  }
+  .l-info-value { 
+    font-size: 12px; 
+    color: #0d2137; 
+    font-weight: 800; 
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .l-status-bar {
+    padding: 12px 15px;
+    display: grid;
+    grid-template-columns: 250px 1fr 1fr 1fr 1fr; 
+    gap: 0;
+    align-items: center;
+    border-radius: 12px;
+    margin: 0 10px 15px; /* Quase largura total, mantendo curvas premium */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    border: 1px solid #dde3ea;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  
+  /* Variantes Premium da Barra de Fundo - Cores Fortalecidas ao Máximo para Destaque */
+  .bar-aprovado { background: linear-gradient(135deg, #c8e6c9 0%, #f1fbf1 100%); border-color: #4caf5077; }
+  .bar-pendencia { background: linear-gradient(135deg, #ffe0b2 0%, #fffaf3 100%); border-color: #ff980077; }
+  .bar-reprovado { background: linear-gradient(135deg, #ffcdd2 0%, #fff8f8 100%); border-color: #f4433677; }
+  .bar-margem { background: linear-gradient(135deg, #b3e5fc 0%, #f0f9ff 100%); border-color: #03a9f477; }
+  .bar-bacen { background: linear-gradient(135deg, #cbd5e0 0%, #f4f7f9 100%); border-color: #0d213777; }
+  .l-approved-box {
+    background: #e8f5e9;
+    border: 2px solid #4caf50;
+    border-radius: 8px;
+    padding: 8px 12px;
+    margin-right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 230px; /* Largura fixa do banner */
+    height: 95px; /* Aumentado para maior destaque visual */
+    transition: all 0.3s ease;
+  }
+  .l-check-circle {
+    width: 42px; height: 42px; /* Aumentado para acompanhar o novo tamanho do box */
+    background: #4caf50;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 900;
+    flex-shrink: 0;
+    transition: all 0.3s ease;
+  }
+
+  /* Dynamic Status Variants */
+  .status-aprovado { border-color: #4caf50; background: #e8f5e9; }
+  .status-aprovado .l-check-circle { background: #4caf50; }
+  .status-aprovado .status { color: #2e7d32; }
+
+  .status-pendencia { border-color: #ff9800; background: #fff3e0; }
+  .status-pendencia .l-check-circle { background: #ff9800; }
+  .status-pendencia .status { color: #e65100; }
+
+  .status-reprovado { border-color: #f44336; background: #ffebee; }
+  .status-reprovado .l-check-circle { background: #f44336; }
+  .status-reprovado .status { color: #c62828; }
+
+  .status-margem { border-color: #03a9f4; background: #e1f5fe; }
+  .status-margem .l-check-circle { background: #03a9f4; }
+  .status-margem .status { color: #0277bd; }
+
+  .status-bacen { border-color: #0d2137; background: #f0f4f8; }
+  .status-bacen .l-check-circle { background: #0d2137; }
+  .status-bacen .status { color: #0d2137; }
+
+  .l-approved-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .l-approved-text .status { 
+    font-size: 16px; /* Aumentado para maior legibilidade */
+    font-weight: 900; 
+    line-height: 1.1; 
+    margin-bottom: 1px;
+    white-space: normal; /* Permite quebra de linha */
+    word-wrap: break-word;
+  }
+  .l-approved-text .desc { 
+    font-size: 8px; 
+    color: #555; 
+    line-height: 1.2; 
+    max-width: 175px; 
+    white-space: normal; /* Permite que o texto quebre e apareça inteiro */
+  }
+
+  .l-metric { 
+    display: grid;
+    grid-template-rows: 25px 38px 28px 12px; /* Estrutura rígida para alinhamento horizontal perfeito */
+    align-items: center;
+    justify-items: center;
+    gap: 2px;
+    padding: 0 8px; 
+    position: relative;
+    flex: 1;
+  }
+  .l-metric:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 65%;
+    width: 1px;
+    background: #dde3ea;
+    animation: separatorReveal 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .l-metric:last-child { padding-left: 15px; }
+  .m-icon-box {
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .m-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+  /* Ajustes ópticos individuais para compensar assimetria dos SVGs */
+  .l-metric:nth-child(2) .m-icon { transform: translateX(-1px); } /* Gráfico: levemente para a esquerda conforme pedido */
+  .l-metric:nth-child(3) .m-icon { transform: translateX(-2px); } /* Moedas: compensa volume à direita */
+  .l-metric:nth-child(4) .m-icon { transform: translateX(0); }
+  .l-metric:nth-child(5) .m-icon { transform: translateX(0); }
+  .l-metric-label { 
+    font-size: 7.5px; 
+    color: #0d2137; 
+    letter-spacing: 0.5px; 
+    font-weight: 900;
+    line-height: 1;
+    text-align: center;
+    display: flex;
+    align-items: flex-start;
+    align-self: start;
+    padding-top: 2px;
+  }
+  .l-metric-value { 
+    font-size: 19px; 
+    font-weight: 900; 
+    color: #0d2137;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+  }
+  .v-currency {
+    font-size: 10px; /* Símbolo R$ menor para estética premium */
+    font-weight: 700;
+    margin-right: 1px;
+  }
+  .l-metric-sub { 
+    font-size: 7px; 
+    color: #666; 
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .l-body { padding: 16px 10px; }
+
+  .l-section-header {
+    background: #0d2137;
+    color: #c9a84c;
+    padding: 8px 15px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 8px;
+  }
+  .l-obs-header { background: #0d2137; color: #c9a84c; padding: 8px 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-radius: 8px; margin: 0; }
+  .l-header-icon {
+    width: 16px;
+    height: 16px;
+    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%); /* Gold/Bronze */
+  }
+  .l-section-header .icon { font-size: 14px; }
+
+  .l-proponents { display: grid; grid-template-columns: 1fr 1fr auto; gap: 12px; margin-bottom: 16px; }
+
+  .l-prop-box {
+    border: 1px solid #dde3ea;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .l-prop-header {
+    background: #e8f0f8;
+    padding: 6px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a3a55;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .l-prop-num {
+    width: 24px; height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .l-prop-body { padding: 10px; }
+  .l-field-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .l-field-icon { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .l-field-icon img { width: 22px; height: 22px; opacity: 0.6; }
+  .l-field-inner { flex: 1; }
+  .l-field-split { flex: 1; display: flex; align-items: center; }
+  .l-field-split .l-sep { width: 1px; height: 18px; background: #ddd; margin: 0 20px; }
+  .l-field-lbl { font-size: 8px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+  .l-field-val { font-size: 10px; color: #1a1a1a; font-weight: 600; line-height: 1.2; }
+
+  .l-renda-box {
+    background: #0d2137;
+    border-radius: 6px;
+    padding: 12px;
+    min-width: 160px;
+  }
+  .l-renda-title { color: #c9a84c; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; text-align: center; }
+  .l-renda-total { text-align: center; margin-bottom: 10px; margin-top: 25px; }
+  .l-renda-total .lbl { color: #7ab0d0; font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .l-renda-total .val { color: #fff; font-size: 15px; font-weight: 900; }
+  .l-renda-row { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin-bottom: 6px; }
+  .l-renda-cell { background: rgba(255,255,255,0.05); border-radius: 4px; padding: 4px 6px; }
+  .l-renda-cell .lbl { color: #7ab0d0; font-size: 8px; text-transform: uppercase; }
+  .l-renda-cell .val { color: #fff; font-size: 10px; font-weight: 700; }
+  .l-tipo-renda { background: rgba(201,168,76,0.15); border-radius: 4px; padding: 5px; text-align: center; }
+  .l-tipo-renda .lbl { color: #7ab0d0; font-size: 8px; text-transform: uppercase; }
+  .l-tipo-renda .val { color: #c9a84c; font-size: 11px; font-weight: 700; }
+  .l-renda-sub-title {
+    color: #7ab0d0;
+    font-size: 7px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 8px 0 4px;
+    border-bottom: 1px solid rgba(122, 176, 208, 0.2);
+    padding-bottom: 2px;
+  }
+
+  .l-conditions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .l-cond-table { width: 100%; border-collapse: collapse; }
+  .l-cond-table tr { border-bottom: 1px solid #f0f0f0; }
+  .l-cond-table td { padding: 6px 8px; font-size: 10px; }
+  .l-cond-table td:first-child { color: #555; font-size: 9px; }
+  .l-cond-table td:last-child { font-weight: 700; color: #1a1a1a; text-align: right; }
+  .l-total-row td { background: #0d2137 !important; color: #fff !important; font-weight: 900 !important; font-size: 11px !important; }
+  .l-prestacao-row td { background: #c9a84c !important; color: #0d2137 !important; font-weight: 900 !important; font-size: 12px !important; }
+  .l-siric-row td { background: #fff8e6 !important; }
+  .l-star { color: #c9a84c; }
+
+  .l-parecer {
+    background: #f8f9fa;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    padding: 14px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .l-parecer-icon { font-size: 28px; color: #c9a84c; flex-shrink: 0; }
+  .l-parecer-text { font-size: 10px; color: #333; line-height: 1.6; word-break: break-word; overflow-wrap: break-word; }
+
+  .l-obs { margin-bottom: 16px; }
+  .l-obs-content {
+    background: #f8f9fa;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .l-obs-icon, .l-parecer-icon { 
+    width: 24px; 
+    height: 24px; 
+    flex-shrink: 0;
+    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%); /* Gold/Bronze */
+  }
+  .l-parecer-icon-subtle {
+    width: 24px; height: 24px; flex-shrink: 0;
+    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%); 
+    opacity: 0.6; /* Dourado meio transparente */
+  }
+  .l-obs-icon-gray {
+    width: 24px; height: 24px; flex-shrink: 0;
+    filter: grayscale(1) brightness(0.5); opacity: 0.5; /* Cinza discreto */
+  }
+  .l-obs-body { font-size: 10px; color: #333; line-height: 1.6; white-space: pre-wrap; word-break: break-all; overflow-wrap: anywhere; flex: 1; }
+  .l-obs-item { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; font-size: 10px; }
+  .l-obs-check { color: #4caf50; font-size: 12px; }
+  .l-obs-lbl { color: #555; }
+  .l-obs-val { font-weight: 600; color: #1a1a1a; margin-left: auto; }
+  .l-obs-empty { color: #bbb; font-size: 10px; font-style: italic; }
+
+  .l-footer {
+    background: #0d2137;
+    padding: 14px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+  }
+  .l-analista { color: #fff; }
+  .l-analista .role { font-size: 9px; color: #7ab0d0; text-transform: uppercase; letter-spacing: 1px; }
+  .l-analista .name { font-size: 12px; font-weight: 700; }
+  .l-analista .company { font-size: 9px; color: #c9a84c; }
+
+  .l-legal-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    max-width: 280px;
+    text-align: right;
+  }
+  .l-legal-text {
+    font-size: 7.5px;
+    color: #7ab0d0;
+    line-height: 1.4;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .l-legal-text b { color: #c9a84c; font-size: 8.5px; display: block; margin-bottom: 2px; }
+  .l-legal-icon {
+    width: 32px;
+    height: 32px;
+    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%);
+    opacity: 0.7;
+  }
+
+  .l-lgpd-notice {
+    font-size: 7.5px;
+    color: #444;
+    text-align: left;
+    margin: 6px 0 12px 10px;
+    font-weight: 500;
+    width: 100%;
+  }
+
+  .l-tagline {
+    background: #0a1a2a;
+    padding: 8px 24px;
+    text-align: center;
+    color: #c9a84c;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    border-top: 1px solid #1a3a55;
+  }
+
+  .right-col { display: flex; flex-direction: column; gap: 0; }
+
+  @keyframes separatorReveal {
+    from { height: 0; opacity: 0; }
+    to { height: 55%; opacity: 1; }
+  }
+  /* Flatpickr ULTRA-PREMIUM Compact Reset */
+  .flatpickr-calendar {
+    background: #161f2a !important;
+    border: 1px solid #263040 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
+    width: 280px !important;
+    padding: 12px !important;
+    font-family: inherit !important;
+  }
+  .flatpickr-months {
+    background: transparent !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 0 5px !important;
+    margin-bottom: 10px !important;
+  }
+  .flatpickr-month {
+    background: transparent !important;
+    flex: 1 !important;
+    text-align: left !important;
+    height: auto !important;
+    color: #fff !important;
+  }
+  .flatpickr-current-month {
+    background: transparent !important;
+    position: static !important;
+    width: auto !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #fff !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  .flatpickr-monthDropdown-months {
+    background: transparent !important;
+    font-weight: 700 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    pointer-events: none !important;
+  }
+  .flatpickr-prev-month, .flatpickr-next-month {
+    background: transparent !important;
+    position: static !important;
+    padding: 4px !important;
+    color: #9ca3af !important;
+    fill: #9ca3af !important;
+    cursor: pointer !important;
+    height: 24px !important;
+    width: 24px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  .flatpickr-prev-month:hover, .flatpickr-next-month:hover { color: #c9a84c !important; fill: #c9a84c !important; }
+  
+  .flatpickr-weekdays {
+    background: transparent !important;
+    height: 28px !important;
+    margin-bottom: 2px !important;
+  }
+  .flatpickr-weekdaycontainer {
+    background: transparent !important;
+    display: flex !important;
+  }
+  .flatpickr-weekday {
+    background: transparent !important;
+    color: #4b5563 !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-transform: none !important;
+    flex: 1 !important;
+  }
+  .flatpickr-innerContainer { 
+    background: transparent !important;
+    margin: 0 !important; 
+  }
+  .flatpickr-rContainer {
+    background: transparent !important;
+  }
+  .flatpickr-days {
+    background: transparent !important;
+    border: none !important;
+    width: auto !important;
+  }
+  .flatpickr-day {
+    background: transparent !important;
+    color: #9ca3af !important;
+    border-radius: 10px !important;
+    height: 34px !important;
+    max-width: 34px !important;
+    line-height: 34px !important;
+    margin: 1px !important;
+    border: none !important;
+    font-weight: 500 !important;
+    font-size: 13px !important;
+  }
+  .flatpickr-day:hover {
+    background: #263040 !important;
+    color: #fff !important;
+  }
+  .flatpickr-day.selected {
+    background: #c9a84c !important;
+    color: #0d2137 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(201, 168, 76, 0.4) !important;
+  }
+  .flatpickr-day.today {
+    border: 1px solid #374151 !important;
+    color: #fff !important;
+  }
+  .flatpickr-day.prevMonthDay, .flatpickr-day.nextMonthDay {
+    color: #374151 !important;
+    opacity: 0.5 !important;
+  }
+  .flatpickr-calendar:before, .flatpickr-calendar:after { display: none !important; }
+  .numInputWrapper { display: none !important; }
+  #dataAnalise, #dataValidade { color: #e0e0e0 !important; font-weight: 700; }
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-title">⚙ Dados do Laudo</div>
+
+    <div class="section-label">Datas</div>
+    <div class="section-content">
+      <div class="row2">
+        <div class="field"><label>Data da Análise</label><input type="text" id="dataAnalise" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label>Validade</label><input type="text" id="dataValidade" placeholder="dd/mm/aaaa"></div>
+      </div>
+    </div>
+
+    <div class="section-label">Empreendimento</div>
+    <div class="section-content">
+      <div class="field"><label>Construtora / Parceiro</label><input type="text" id="construtora" placeholder="NOME DA CONSTRUTORA"></div>
+      <div class="field"><label>Empreendimento</label><input type="text" id="empreendimento" placeholder="NOME DO EMPREENDIMENTO"></div>
+      <div class="row2">
+        <div class="field"><label>Município do Imóvel</label>
+          <select id="municipio">
+            <option>NOVA IGUAÇU</option>
+            <option>NILÓPOLIS</option>
+            <option>BELFORD ROXO</option>
+            <option>SÃO GONÇALO</option>
+            <option>NITERÓI</option>
+            <option>QUEIMADOS</option>
+            <option>RIO DE JANEIRO</option>
+            <option>DUQUE DE CAXIAS</option>
+            <option>MESQUITA</option>
+            <option selected>SEM INFORMAÇÕES</option>
+          </select>
+        </div>
+        <div class="field"><label>Modalidade</label>
+          <select id="modalidade">
+            <option selected disabled value="">SELECIONE</option>
+            <option>PLANTA</option><option>PRONTO</option><option>USADO</option><option>REFORMA</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Resultado</div>
+    <div class="section-content">
+      <div class="field"><label>Resultado da Análise</label>
+        <select id="statusAnalise" onchange="updateStatus()">
+          <option selected disabled value="">SELECIONE</option>
+          <option value="aprovado">APROVADO</option>
+          <option value="pendencia">APROVADO C/ PENDÊNCIA</option>
+          <option value="reprovado">REPROVADO</option>
+          <option value="margem">AV. CONDICIONADA MARGEM</option>
+          <option value="bacen">AV. CONDICIONADA SCR BACEN</option>
+        </select>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%"></div>
+        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" placeholder="5,64%"></div>
+        <div class="field"><label>Faixa MCMV</label>
+          <select id="faixaMCMV">
+            <option selected disabled value="">SELECIONE</option>
+            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Renda Total Apurada</label><input type="text" id="rendaTotal" placeholder="R$ 0,00" readonly></div>
+    </div>
+
+    <div class="section-label">1º Proponente</div>
+    <div class="section-content">
+      <div class="field"><label>Nome Completo</label><input type="text" id="p1nome" placeholder="NOME DO PROPONENTE"></div>
+      <div class="row2">
+        <div class="field"><label>Data de Nascimento</label><input type="text" id="p1nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
+        <div class="field"><label>CPF</label><input type="text" id="p1cpf" placeholder="000.000.000-00"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Profissão</label><input type="text" id="p1prof" placeholder="PROFISSÃO"></div>
+        <div class="field"><label>Renda Comprovada</label><input type="text" id="p1renda" placeholder="R$ 0,00"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Dependente</label><select id="p1dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"><label>Cotista</label><select id="p1cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Tipo de Renda</label><select id="p1tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
+        <div class="field"><label>Declara IRPF</label><select id="p1irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+      </div>
+    </div>
+
+    <div class="section-label" style="display: flex; align-items: center; justify-content: space-between;">
+      2º Proponente (opcional)
+      <label class="toggle-switch">
+        <input type="checkbox" id="hasP2">
+        <span class="toggle-slider"></span>
+      </label>
+    </div>
+    <div id="p2-fields" style="display: none;">
+      <div class="section-content">
+        <div class="field"><label>Nome Completo</label><input type="text" id="p2nome" placeholder="NOME DO PROPONENTE (OPCIONAL)"></div>
+        <div class="row2">
+          <div class="field"><label>Data de Nascimento</label><input type="text" id="p2nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
+          <div class="field"><label>CPF</label><input type="text" id="p2cpf" placeholder="000.000.000-00"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Profissão</label><input type="text" id="p2prof" placeholder="PROFISSÃO"></div>
+          <div class="field"><label>Renda Comprovada</label><input type="text" id="p2renda" placeholder="R$ 0,00"></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Dependente</label><select id="p2dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+          <div class="field"><label>Cotista</label><select id="p2cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label>Tipo de Renda</label><select id="p2tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
+          <div class="field"><label>Declara IRPF</label><select id="p2irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Condições Aprovadas</div>
+    <div class="section-content">
+      <div class="field"><label>Valor de Avaliação do Imóvel</label><input type="text" id="valorAval" placeholder="R$ 0,00"></div>
+      <div class="row2">
+        <div class="field"><label>Valor do Financiamento</label><input type="text" id="valorFinanc" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Subsídio Concedido</label><input type="text" id="subsidio" placeholder="R$ 0,00"></div>
+      </div>
+      <div class="field"><label>FGTS Utilizado</label><input type="text" id="fgts" placeholder="R$ 0,00"></div>
+      <div class="field"><label>Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00"></div>
+      <div class="row2">
+        <div class="field"><label>Prazo (meses)</label><input type="text" id="prazo" placeholder="360 meses"></div>
+        <div class="field"><label>Tabela</label><select id="tabela"><option selected disabled value="">SELECIONE</option><option>PRICE</option><option>SAC</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>1ª Prestação</label><input type="text" id="prestacao" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Parcela SIRIC (30%)</label><input type="text" id="siric" placeholder="R$ 0,00"></div>
+      </div>
+      <div class="field"><label>Enquadramento / Faixa</label>
+        <select id="enquadramento">
+          <option selected disabled value="">SELECIONE</option>
+          <option>Faixa 1 - (Renda até 3.200,00)</option>
+          <option>Faixa 2 (Renda de 3.200,01 a 5.000,00)</option>
+          <option>Faixa 3 (Renda de 5.000,01 a 9.600,00)</option>
+          <option>Faixa 4 (Renda de 9.600,01 a 13.000,00)</option>
+          <option>SBPE</option>
+          <option>PRO COTISTA</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="section-label">Observações</div>
+    <div class="section-content">
+      <div class="field">
+        <label>Observações de Venda</label>
+        <textarea id="obsVenda" placeholder="Digite observações relevantes aqui..." style="width: 100%; height: 100px; background: #0f1923; border: 1px solid #263040; color: #fff; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 11px; resize: vertical;"></textarea>
+      </div>
+    </div>
+
+    <div class="section-label">Analista</div>
+    <div class="section-content">
+      <div class="field"><label>Nome do Analista</label><input type="text" id="cargo" placeholder="NOME DO ANALISTA"></div>
+    </div>
+
+    <button class="btn-generate" onclick="gerarPDF()">⬇ Gerar & Baixar PDF</button>
+  </div>
+
+  <div class="resizer" id="dragMe"></div>
+
+  <!-- PREVIEW -->
+  <div class="preview-area">
+    <div class="preview-header">Preview do Laudo</div>
+    <div id="laudo">
+      <!-- HEADER -->
+      <div class="l-header">
+        <div class="l-logo-area">
+          <img src="public/logo.jpeg" class="l-logo-img" alt="MDS Logo">
+        </div>
+        <div class="l-title">LAUDO DE ANÁLISE</div>
+        <div class="l-header-right">
+          <div class="l-dates-line"></div>
+          <div class="l-dates-bg"></div>
+          <div class="l-dates">
+            <div class="l-date-box">
+              <div class="l-date-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"></path></svg>
+              </div>
+              <div class="l-date-text">
+                <div class="l-date-label">DATA DA ANÁLISE</div>
+                <div class="l-date-value" id="v-dataAnalise">28/04/2026</div>
+              </div>
+            </div>
+            <div class="l-date-box">
+              <div class="l-date-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+              <div class="l-date-text">
+                <div class="l-date-label">VALIDADE</div>
+                <div class="l-date-value" id="v-dataValidade">01/04/2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- INFO BAR -->
+      <div class="l-info-bar">
+        <!-- CONSTRUTORA -->
+        <div class="l-info-item">
+          <div class="l-info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0d2137">
+              <path d="m4 13h3v2h-3zm5 2h3v-2h-3zm-5 4h3v-2h-3zm5 0h3v-2h-3zm-5-12h3v-2h-3zm5 0h3v-2h-3zm-5 4h3v-2h-3zm5 0h3v-2h-3zm15-3v16h-24v-21a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v2h5a3 3 0 0 1 3 3zm-10-5a1 1 0 0 0 -1-1h-10a1 1 0 0 0 -1 1v19h12zm8 5a1 1 0 0 0 -1-1h-5v15h6zm-4 7h2v-2h-2zm0 4h2v-2h-2zm0-8h2v-2h-2z"/>
+            </svg>
+          </div>
+          <div class="l-info-content">
+            <div class="l-info-label">CONSTRUTORA / PARCEIRO</div>
+            <div class="l-info-value" id="v-construtora">-</div>
+          </div>
+        </div>
+        <!-- EMPREENDIMENTO -->
+        <div class="l-info-item">
+          <div class="l-info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0d2137">
+              <path d="M13.338.833a2,2,0,0,0-2.676,0L0,10.429v10.4a3.2,3.2,0,0,0,3.2,3.2H20.8a3.2,3.2,0,0,0,3.2-3.2v-10.4ZM15,22.026H9V17a3,3,0,0,1,6,0Zm7-1.2a1.2,1.2,0,0,1-1.2,1.2H17V17A5,5,0,0,0,7,17v5.026H3.2a1.2,1.2,0,0,1-1.2-1.2V11.319l10-9,10,9Z"/>
+            </svg>
+          </div>
+          <div class="l-info-content">
+            <div class="l-info-label">EMPREENDIMENTO</div>
+            <div class="l-info-value" id="v-empreendimento">-</div>
+          </div>
+        </div>
+        <!-- MUNICIPIO -->
+        <div class="l-info-item">
+          <div class="l-info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0d2137">
+              <path d="M12,6a4,4,0,1,0,4,4A4,4,0,0,0,12,6Zm0,6a2,2,0,1,1,2-2A2,2,0,0,1,12,12Z"/><path d="M12,24a5.271,5.271,0,0,1-4.311-2.2c-3.811-5.257-5.744-9.209-5.744-11.747a10.055,10.055,0,0,1,20.11,0c0,2.538-1.933,6.49-5.744,11.747A5.271,5.271,0,0,1,12,24ZM12,2.181a7.883,7.883,0,0,0-7.874,7.874c0,2.01,1.893,5.727,5.329,10.466a3.145,3.145,0,0,0,5.09,0c3.436-4.739,5.329-8.456,5.329-10.466A7.883,7.883,0,0,0,12,2.181Z"/>
+            </svg>
+          </div>
+          <div class="l-info-content">
+            <div class="l-info-label">MUNICÍPIO DO IMÓVEL</div>
+            <div class="l-info-value" id="v-municipio">SEM INFORMAÇÕES</div>
+          </div>
+        </div>
+        <!-- MODALIDADE -->
+        <div class="l-info-item">
+          <div class="l-info-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="#0d2137">
+              <path d="M18.656.93,6.464,13.122A4.966,4.966,0,0,0,5,16.657V18a1,1,0,0,0,1,1H7.343a4.966,4.966,0,0,0,3.535-1.464L23.07,5.344a3.125,3.125,0,0,0,0-4.414A3.194,3.194,0,0,0,18.656.93Zm3,3L9.464,16.122A3.02,3.02,0,0,1,7.343,17H7v-.343a3.02,3.02,0,0,1,.878-2.121L20.07,2.344a1.148,1.148,0,0,1,1.586,0A1.123,1.123,0,0,1,21.656,3.93Z"/><path d="M23,8.979a1,1,0,0,0-1,1V15H18a3,3,0,0,0-3,3v4H5a3,3,0,0,1-3-3V5A3,3,0,0,1,5,2h9.042a1,1,0,0,0,0-2H5A5.006,5.006,0,0,0,0,5V19a5.006,5.006,0,0,0,5,5H16.343a4.968,4.968,0,0,0,3.536-1.464l2.656-2.658A4.968,4.968,0,0,0,24,16.343V9.979A1,1,0,0,0,23,8.979ZM18.465,21.122a2.975,2.975,0,0,1-1.465.8V18a1,1,0,0,1,1-1h3.925a3.016,3.016,0,0,1-.8,1.464Z"/>
+            </svg>
+          </div>
+          <div class="l-info-content">
+            <div class="l-info-label">MODALIDADE DO IMÓVEL</div>
+            <div class="l-info-value" id="v-modalidade">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATUS BAR -->
+      <div class="l-status-bar bar-aprovado" id="v-status-bar">
+        <div class="l-approved-box status-aprovado" id="v-status-box">
+          <div class="l-check-circle" id="v-status-icon">✓</div>
+          <div class="l-approved-text">
+            <div class="status" id="v-status-text">APROVADO</div>
+            <div class="desc" id="v-status-desc">Operação enquadrada nas políticas de crédito vigentes.</div>
+          </div>
+        </div>
+        <div class="l-metric">
+          <div class="l-metric-label">COTA<br>FINANCIAMENTO</div>
+          <div class="m-icon-box"><img src="Icones/cota.svg" class="m-icon"></div>
+          <div class="l-metric-value" id="v-cota">-</div>
+          <div class="l-metric-sub"></div>
+        </div>
+        <div class="l-metric">
+          <div class="l-metric-label">JUROS EFETIVOS<br>(a.a.)</div>
+          <div class="m-icon-box"><img src="Icones/Juros.svg" class="m-icon"></div>
+          <div class="l-metric-value" id="v-juros">-</div>
+          <div class="l-metric-sub"></div>
+        </div>
+        <div class="l-metric">
+          <div class="l-metric-label">FAIXA MCMV</div>
+          <div class="m-icon-box"><img src="Icones/faixa MCMV.svg" class="m-icon"></div>
+          <div class="l-metric-value" id="v-faixa">FAIXA 2</div>
+          <div class="l-metric-sub" id="v-faixa-range">Renda de 3.200,01 a 5.000,00</div>
+        </div>
+        <div class="l-metric">
+          <div class="l-metric-label">RENDA TOTAL<br>APURADA</div>
+          <div class="m-icon-box"><img src="Icones/renda.svg" class="m-icon"></div>
+          <div class="l-metric-value" id="v-renda">
+            <span class="symbol">R$</span> 
+            <span class="value">3.735,62</span>
+          </div>
+          <div class="l-metric-sub"></div>
+        </div>
+      </div>
+
+      <div class="l-body">
+        <!-- PROPONENTES -->
+        <div class="l-section-header"><img src="Icones/user.svg" class="l-header-icon"> DADOS DOS PROPONENTES</div>
+        <div class="l-proponents" style="grid-template-columns: 1fr auto;">
+          <div class="l-prop-box">
+            <div class="l-prop-header"><div class="l-prop-num"><svg viewBox="0 0 24 24" width="24" height="24"><rect width="24" height="24" rx="4" fill="#c9a84c"/><path d="M13,17V7c0-.404-.244-.769-.617-.924-.375-.155-.804-.069-1.09,.217l-2.444,2.444c-.391,.391-.391,1.023,0,1.414s1.023,.391,1.414,0l.737-.737v7.586c0,.552,.448,1,1,1s1-.448,1-1Z" fill="white"/></svg></div> 1º PROPONENTE</div>
+            <div class="l-prop-body">
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/pessoa.svg"></div><div class="l-field-inner"><div class="l-field-lbl">NOME</div><div class="l-field-val" id="v-p1nome">-</div></div></div>
+              <div class="l-field-row">
+                <div class="l-field-icon"><img src="Icones/calendar.svg"></div>
+                <div class="l-field-split">
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">DATA DE NASCIMENTO</div>
+                    <div class="l-field-val" id="v-p1nasc">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">IDADE</div>
+                    <div class="l-field-val" id="v-p1idade"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/resume.svg"></div><div class="l-field-inner"><div class="l-field-lbl">CPF</div><div class="l-field-val" id="v-p1cpf">-</div></div></div>
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/briefcase.svg"></div><div class="l-field-inner"><div class="l-field-lbl">PROFISSÃO</div><div class="l-field-val" id="v-p1prof">-</div></div></div>
+              <div class="l-field-row">
+                <div class="l-field-icon"><img src="Icones/dollar.svg"></div>
+                <div class="l-field-split">
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">VALOR</div>
+                    <div class="l-field-val" id="v-p1renda">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">RENDA</div>
+                    <div class="l-field-val" id="v-p1tipoRenda">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">IRPF</div>
+                    <div class="l-field-val" id="v-p1irpf">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="l-prop-box" id="v-p2-box" style="display: none;">
+            <div class="l-prop-header"><div class="l-prop-num"><svg viewBox="0 0 24 24" width="24" height="24"><rect width="24" height="24" rx="4" fill="#c9a84c"/><path d="M16,17c0-.552-.447-1-1-1h-4.781c.426-.37,1.069-.72,1.742-1.086,1.753-.956,4.156-2.264,4.035-5.131-.09-2.121-1.845-3.783-3.995-3.783-2.206,0-4,1.794-4,4,0,.552,.448,1,1,1s1-.448,1-1c0-1.103,.897-2,2-2,1.058,0,1.953,.838,1.997,1.868,.063,1.512-1.088,2.252-2.994,3.29-.99,.539-1.925,1.048-2.559,1.797-.475,.56-.579,1.32-.272,1.983,.304,.655,.942,1.062,1.666,1.062h5.162c.553,0,1-.448,1-1Z" fill="white"/></svg></div> 2º PROPONENTE</div>
+            <div class="l-prop-body">
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/pessoa.svg"></div><div class="l-field-inner"><div class="l-field-lbl">NOME</div><div class="l-field-val" id="v-p2nome">-</div></div></div>
+              <div class="l-field-row">
+                <div class="l-field-icon"><img src="Icones/calendar.svg"></div>
+                <div class="l-field-split">
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">DATA DE NASCIMENTO</div>
+                    <div class="l-field-val" id="v-p2nasc">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">IDADE</div>
+                    <div class="l-field-val" id="v-p2idade"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/resume.svg"></div><div class="l-field-inner"><div class="l-field-lbl">CPF</div><div class="l-field-val" id="v-p2cpf">-</div></div></div>
+              <div class="l-field-row"><div class="l-field-icon"><img src="Icones/briefcase.svg"></div><div class="l-field-inner"><div class="l-field-lbl">PROFISSÃO</div><div class="l-field-val" id="v-p2prof">-</div></div></div>
+              <div class="l-field-row">
+                <div class="l-field-icon"><img src="Icones/dollar.svg"></div>
+                <div class="l-field-split">
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">VALOR</div>
+                    <div class="l-field-val" id="v-p2renda">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">RENDA</div>
+                    <div class="l-field-val" id="v-p2tipoRenda">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">IRPF</div>
+                    <div class="l-field-val" id="v-p2irpf">-</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="l-renda-box">
+            <div class="l-renda-title"><img src="Icones/faixa MCMV.svg" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;filter:invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%);"> RESUMO DE RENDA</div>
+            
+            <div class="l-renda-sub-title">1º PROPONENTE</div>
+            <div class="l-renda-row">
+              <div class="l-renda-cell"><div class="lbl">DEPENDENTE</div><div class="val" id="v-p1dependente">-</div></div>
+              <div class="l-renda-cell"><div class="lbl">COTISTA</div><div class="val" id="v-p1cotista">-</div></div>
+            </div>
+
+            <div id="v-renda-p2-info" style="display: none;">
+              <div class="l-renda-sub-title">2º PROPONENTE</div>
+              <div class="l-renda-row">
+                <div class="l-renda-cell"><div class="lbl">DEPENDENTE</div><div class="val" id="v-p2dependente">-</div></div>
+                <div class="l-renda-cell"><div class="lbl">COTISTA</div><div class="val" id="v-p2cotista">-</div></div>
+              </div>
+            </div>
+
+            <div class="l-renda-total">
+              <div class="lbl">RENDA TOTAL APURADA</div>
+              <div class="val" id="v-rendaTotal2">-</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CONDIÇÕES -->
+        <div class="l-section-header"><img src="Icones/house-building.svg" class="l-header-icon"> CONDIÇÕES APROVADAS</div>
+        <div class="l-conditions">
+          <table class="l-cond-table">
+            <tr><td>🏠 VALOR DE AVALIAÇÃO DO IMÓVEL</td><td id="v-valorAval">-</td></tr>
+            <tr><td>🏦 VALOR DO FINANCIAMENTO</td><td id="v-valorFinanc">-</td></tr>
+            <tr><td style="color:#2e7d32">💰 SUBSÍDIO CONCEDIDO</td><td style="color:#2e7d32" id="v-subsidio">-</td></tr>
+            <tr><td>🔑 FGTS UTILIZADO</td><td id="v-fgts">-</td></tr>
+            <tr class="l-total-row"><td>TOTAL DOS VALORES</td><td id="v-totalValores">-</td></tr>
+
+          </table>
+          <div>
+            <table class="l-cond-table">
+              <tr><td>ENQUADRAMENTO / FAIXA</td><td id="v-enquadramento">-</td></tr>
+              <tr><td>PRAZO DO FINANCIAMENTO</td><td id="v-prazo">-</td></tr>
+              <tr><td>TABELA</td><td id="v-tabela">PRICE</td></tr>
+              <tr class="l-prestacao-row"><td>1ª PRESTAÇÃO (FINANCIAMENTO)</td><td id="v-prestacao">-</td></tr>
+              <tr class="l-siric-row"><td><span class="l-star">★</span> PARCELA SIRIC (30%)</td><td><b id="v-siric">-</b></td></tr>
+              <tr class="l-siric-row"><td>COTA SIRIC</td><td>30%</td></tr>
+              <tr><td>JUROS EFETIVOS (a.a.)</td><td id="v-juros2">-</td></tr>
+
+            </table>
+          </div>
+        </div>
+
+        <!-- PARECER -->
+        <div class="l-section-header"><img src="Icones/shield-check.svg" class="l-header-icon"> PARECER TÉCNICO</div>
+        <div class="l-parecer">
+          <img src="Icones/route-interstate.svg" class="l-parecer-icon-subtle">
+          <div class="l-parecer-text">
+            Cliente enquadrado na <b id="v-faixa2">Faixa 2</b> do Programa Minha Casa Minha Vida, com comprometimento dentro dos limites estabelecidos pela política de crédito (30%). Operação viável, com <b>subsídio aplicado</b> e <b>financiamento de <span id="v-cota2">80%</span></b> do valor do imóvel. Documentação conforme e análise de crédito aprovada.
+          </div>
+        </div>
+
+        <!-- OBSERVAÇÕES -->
+        <div class="l-obs">
+          <div class="l-section-header"><img src="Icones/clip.svg" class="l-header-icon"> OBSERVAÇÕES / INFORMAÇÕES SETOR DE VENDAS</div>
+          <div class="l-obs-content">
+            <img src="Icones/search-alt.svg" class="l-obs-icon-gray">
+            <div class="l-obs-body" id="v-obsVenda">Nenhuma observação registrada.</div>
+          </div>
+        </div>
+        
+        <div class="l-lgpd-notice">
+          * O tratamento dos dados pessoais contidos neste laudo observa os princípios da LGPD (Lei 13.709/18), sendo utilizados exclusivamente para fins de análise de crédito imobiliário.
+        </div>
+      </div>
+
+      <!-- FOOTER -->
+      <div class="l-footer">
+        <div class="l-analista">
+          <div class="role">ANALISTA RESPONSÁVEL</div>
+          <div class="name" id="v-cargo">-</div>
+          <div class="company">MDS Crédito Imobiliário</div>
+        </div>
+        <div class="l-legal-info">
+          <div class="l-legal-text">
+            <b>CERTIFICAÇÃO TÉCNICA</b>
+            Documento processado em total conformidade com as normas vigentes do SFH e diretrizes do FGTS.
+          </div>
+          <img src="Icones/shield-check.svg" class="l-legal-icon">
+        </div>
+      </div>
+      <div class="l-tagline">MDS &nbsp;•&nbsp; CRÉDITO IMOBILIÁRIO &nbsp;•&nbsp; CONFIANÇA • TRANSPARÊNCIA • REALIZAÇÃO</div>
+    </div>
+  </div>
+</div>
+
+<script>
+function updateStatus() {
+  const val = document.getElementById('statusAnalise').value;
+  const box = document.getElementById('v-status-box');
+  const icon = document.getElementById('v-status-icon');
+  const text = document.getElementById('v-status-text');
+  const desc = document.getElementById('v-status-desc');
+  const statusBar = document.getElementById('v-status-bar');
+
+  const configs = {
+    aprovado: { class: 'status-aprovado', bar: 'bar-aprovado', icon: '✓', text: 'APROVADO', desc: 'Operação enquadrada nas políticas de crédito vigentes.' },
+    pendencia: { class: 'status-pendencia', bar: 'bar-pendencia', icon: '!', text: 'APROVADO C/ PENDÊNCIA', desc: 'Aprovação condicionada à resolução de pendências documentais.' },
+    reprovado: { class: 'status-reprovado', bar: 'bar-reprovado', icon: '✕', text: 'REPROVADO', desc: 'Operação não atende aos critérios de elegibilidade atuais.' },
+    margem: { class: 'status-margem', bar: 'bar-margem', icon: 'i', text: 'AV. CONDICIONADA MARGEM', desc: 'Análise condicionada à margem consignável disponível.' },
+    bacen: { class: 'status-bacen', bar: 'bar-bacen', icon: 'i', text: 'AV. CONDICIONADA SCR BACEN', desc: 'Necessária análise complementar de restrições no SCR/BACEN.' }
+  };
+
+  const c = configs[val] || { class: '', bar: '', icon: '-', text: 'AGUARDANDO SELEÇÃO', desc: 'Selecione o resultado da análise no menu lateral.' };
+  
+  box.className = 'l-approved-box ' + c.class;
+  statusBar.className = 'l-status-bar ' + c.bar;
+  icon.textContent = c.icon;
+  text.textContent = c.text;
+  desc.textContent = c.desc;
+}
+
+// Init dates with Flatpickr
+const today = new Date();
+const nextMonth = new Date();
+nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+const fpConfig = {
+  locale: "pt",
+  dateFormat: "d/m/Y",
+  disableMobile: "true",
+  monthSelectorType: "static",
+  onReady: function(selectedDates, dateStr, instance) {
+    instance.calendarContainer.classList.add("dark");
+  }
+};
+
+flatpickr("#dataAnalise", {
+  ...fpConfig,
+  defaultDate: today,
+  onChange: function(selectedDates, dateStr) {
+    document.getElementById('v-dataAnalise').textContent = dateStr;
+  }
+});
+
+flatpickr("#dataValidade", {
+  ...fpConfig,
+  defaultDate: nextMonth,
+  onChange: function(selectedDates, dateStr) {
+    document.getElementById('v-dataValidade').textContent = dateStr;
+  }
+});
+
+// Update initial previews
+document.getElementById('v-dataAnalise').textContent = flatpickr.formatDate(today, "d/m/Y");
+document.getElementById('v-dataValidade').textContent = flatpickr.formatDate(nextMonth, "d/m/Y");
+
+updateStatus();
+
+
+
+function bind(inputId, previewId, transform) {
+  const el = document.getElementById(inputId);
+  const prev = document.getElementById(previewId);
+  if (!el || !prev) return;
+  const update = () => { prev.textContent = transform ? transform(el.value) : el.value; };
+  el.addEventListener('input', update);
+  el.addEventListener('change', update);
+  update();
+}
+
+// Simple bindings
+const bindings = [
+  ['construtora','v-construtora'], ['empreendimento','v-empreendimento'],
+  ['municipio','v-municipio'], ['modalidade','v-modalidade'],
+  ['cota','v-cota'], ['cota','v-cota2'],
+  ['juros','v-juros'], ['juros','v-juros2'],
+  ['faixaMCMV','v-faixa'], ['faixaMCMV','v-faixa2'],
+  ['p1nome','v-p1nome'],
+  ['p1prof','v-p1prof'], ['p1prof','v-p1prof2'],
+  ['p2nome','v-p2nome'],
+  ['p2prof','v-p2prof'], ['p2prof','v-p2prof2'],
+  ['dependente','v-dependente'], ['cotista','v-cotista'],
+  ['valorAval','v-valorAval'], ['valorFinanc','v-valorFinanc'],
+  ['subsidio','v-subsidio'], ['fgts','v-fgts'], ['entrada','v-entrada'],
+  ['totalValores','v-totalValores'], ['prazo','v-prazo'], ['tabela','v-tabela'],
+  ['prestacao','v-prestacao'], ['siric','v-siric'],
+  ['enquadramento','v-enquadramento'], ['indexador','v-indexador'],
+  ['cargo','v-cargo'], ['creci','v-creci'],
+  ['obsVenda','v-obsVenda', (v) => v.trim() || 'Nenhuma observação registrada.'],
+];
+bindings.forEach(([a, b]) => bind(a, b));
+bindRenda();
+
+// CPF Mask
+function maskCPF(el, previewId) {
+  el.setAttribute('maxlength', '14');
+  el.setAttribute('inputmode', 'numeric');
+  el.setAttribute('autocomplete', 'off');
+  const syncPreview = () => {
+    if (previewId) {
+      const prev = document.getElementById(previewId);
+      if (prev) prev.textContent = el.value;
+    }
+  };
+  el.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').substring(0, 11);
+    if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+    else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d+)/, '$1.$2.$3');
+    else if (v.length > 3) v = v.replace(/(\d{3})(\d+)/, '$1.$2');
+    e.target.value = v;
+    syncPreview();
+  });
+  syncPreview();
+}
+maskCPF(document.getElementById('p1cpf'), 'v-p1cpf');
+maskCPF(document.getElementById('p2cpf'), 'v-p2cpf');
+
+function maskCurrency(el) {
+  el.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, "");
+    if (v.length > 0) {
+      v = (parseInt(v) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+      e.target.value = "R$ " + v;
+    } else {
+      e.target.value = "R$ 0,00";
+    }
+  });
+  
+  // Se o usuário digitar 5000 e sair do campo, vira 5.000,00 (lógica de unidade se não houver pontuação)
+  el.addEventListener('blur', e => {
+    let v = e.target.value.replace("R$ ", "").trim();
+    if (!v.includes(",")) {
+      let num = parseFloat(v.replace(/\./g, ""));
+      if (!isNaN(num)) {
+        e.target.value = "R$ " + num.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+        const event = new Event('input', { bubbles: true });
+        e.target.dispatchEvent(event);
+      }
+    }
+  });
+}
+
+function bindRenda() {
+  const p1 = document.getElementById('p1renda');
+  const p2 = document.getElementById('p2renda');
+  const total = document.getElementById('rendaTotal');
+
+  maskCurrency(p1);
+  maskCurrency(p2);
+
+  const parse = (v) => parseFloat(v.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+  const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const updateAll = () => {
+    const valTotal = parse(p1.value) + parse(p2.value);
+    total.value = fmt(valTotal);
+    updatePreview('p1renda', 'v-p1renda');
+    updatePreview('p2renda', 'v-p2renda');
+    updatePreview('rendaTotal', 'v-renda');
+    if (document.getElementById('v-rendaTotal2')) {
+      document.getElementById('v-rendaTotal2').textContent = total.value;
+    }
+  };
+
+  const updatePreview = (inputId, previewId) => {
+    const val = document.getElementById(inputId).value;
+    const prev = document.getElementById(previewId);
+    if (!prev) return;
+    const parts = val.split(' ');
+    const symbol = parts[0] || 'R$';
+    const value = parts.slice(1).join(' ') || '0,00';
+    prev.innerHTML = `<span class="symbol">${symbol}</span> <span class="value">${value}</span>`;
+  };
+
+  p1.addEventListener('input', updateAll);
+  p2.addEventListener('input', updateAll);
+  updateAll();
+}
+
+// Update Proponent Preview Selects
+['p1tipoRenda', 'p2tipoRenda', 'p1irpf', 'p2irpf', 'p1dependente', 'p1cotista', 'p2dependente', 'p2cotista'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', () => {
+      const val = el.value;
+      const vEl = document.getElementById('v-' + id);
+      if (vEl) vEl.textContent = val;
+    });
+  }
+});
+
+// Toggle 2nd Proponent
+const hasP2 = document.getElementById('hasP2');
+hasP2.addEventListener('click', (e) => e.stopPropagation());
+hasP2.addEventListener('change', (e) => {
+  const show = e.target.checked;
+  const label = hasP2.closest('.section-label');
+  if (show && label) label.classList.remove('collapsed');
+  
+  document.getElementById('p2-fields').style.display = show ? 'block' : 'none';
+  const p2Box = document.getElementById('v-p2-box');
+  p2Box.style.display = show ? 'block' : 'none';
+  const p2Info = document.getElementById('v-renda-p2-info');
+  if (p2Info) p2Info.style.display = show ? 'block' : 'none';
+  
+  const container = document.querySelector('.l-proponents');
+  container.style.gridTemplateColumns = show ? '1fr 1fr auto' : '1fr auto';
+});
+
+// Dynamic MCMV Range
+const mcmvRanges = {
+  'FAIXA 1': 'Até R$ 2.640,00',
+  'FAIXA 2': 'Renda de 3.200,01 a 5.000,00',
+  'FAIXA 3': 'Renda de 4.400,01 a 8.000,00',
+  'FAIXA 4': 'Renda acima de R$ 8.000,00'
+};
+document.getElementById('faixaMCMV').addEventListener('change', (e) => {
+  const val = e.target.value;
+  const range = mcmvRanges[val] || '';
+  const rangeEl = document.getElementById('v-faixa-range');
+  if (rangeEl) rangeEl.textContent = range;
+  document.getElementById('v-faixa2').textContent = val;
+});
+
+// Enquadramento Sync with Parecer
+document.getElementById('enquadramento').addEventListener('change', (e) => {
+  const val = e.target.value;
+  const match = val.match(/Faixa \d/i);
+  const faixaText = match ? match[0] : val;
+  document.getElementById('v-faixa2').textContent = faixaText;
+});
+
+// Cota Financ. Masking
+const cotaInput = document.getElementById('cota');
+cotaInput.addEventListener('input', (e) => {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v !== '') {
+    let num = parseInt(v);
+    if (num > 100) num = 100;
+    e.target.value = num + '%';
+    document.getElementById('v-cota').textContent = num + '%';
+  } else {
+    e.target.value = '';
+    document.getElementById('v-cota').textContent = '-';
+  }
+});
+cotaInput.addEventListener('keyup', (e) => {
+  const pos = cotaInput.value.indexOf('%');
+  if (pos !== -1) cotaInput.setSelectionRange(pos, pos);
+});
+cotaInput.addEventListener('click', () => {
+  const pos = cotaInput.value.indexOf('%');
+  if (pos !== -1) cotaInput.setSelectionRange(pos, pos);
+});
+
+// Juros Masking (Financeiro Style: 0,00%)
+const jurosInput = document.getElementById('juros');
+jurosInput.addEventListener('input', (e) => {
+  let v = e.target.value.replace(/\D/g, '');
+  if (v !== '') {
+    let num = parseInt(v) / 100;
+    if (num > 40) num = 40;
+    
+    const formatted = num.toLocaleString('pt-BR', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }) + '%';
+    
+    e.target.value = formatted;
+    document.getElementById('v-juros').textContent = formatted;
+    if (document.getElementById('v-juros2')) document.getElementById('v-juros2').textContent = formatted;
+  } else {
+    e.target.value = '';
+    document.getElementById('v-juros').textContent = '-';
+    if (document.getElementById('v-juros2')) document.getElementById('v-juros2').textContent = '-';
+  }
+});
+jurosInput.addEventListener('keyup', () => {
+  const pos = jurosInput.value.indexOf('%');
+  if (pos !== -1) jurosInput.setSelectionRange(pos, pos);
+});
+jurosInput.addEventListener('click', () => {
+  const pos = jurosInput.value.indexOf('%');
+  if (pos !== -1) jurosInput.setSelectionRange(pos, pos);
+});
+
+// Date bindings
+
+// Date mask for birth date fields (DD/MM/AAAA)
+function maskDate(el, previewId, agePreviewId) {
+  const calcAge = (dateStr) => {
+    const [d, m, y] = dateStr.split('/').map(Number);
+    if (!d || !m || !y || y < 1900) return '';
+    const hoje = new Date();
+    let age = hoje.getFullYear() - y;
+    const mDiff = hoje.getMonth() + 1 - m;
+    if (mDiff < 0 || (mDiff === 0 && hoje.getDate() < d)) age--;
+    return age > 0 ? age + ' ANOS' : '';
+  };
+  el.addEventListener('input', e => {
+    let v = e.target.value.replace(/\D/g, '').substring(0, 8);
+    if (v.length > 4) v = v.replace(/(\d{2})(\d{2})(\d+)/, '$1/$2/$3');
+    else if (v.length > 2) v = v.replace(/(\d{2})(\d+)/, '$1/$2');
+    e.target.value = v;
+    if (previewId) {
+      const prev = document.getElementById(previewId);
+      if (prev) prev.textContent = v;
+    }
+    if (agePreviewId) {
+      const agePrev = document.getElementById(agePreviewId);
+      if (agePrev) agePrev.textContent = v.length === 10 ? calcAge(v) : '';
+    }
+  });
+}
+maskDate(document.getElementById('p1nasc'), 'v-p1nasc', 'v-p1idade');
+maskDate(document.getElementById('p2nasc'), 'v-p2nasc', 'v-p2idade');
+// Clear stale default values from preview on load
+['v-p1nasc','v-p2nasc','v-p1idade','v-p2idade'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.textContent = '';
+});
+
+// PDF Generator
+async function gerarPDF() {
+  const btn = document.querySelector('.btn-generate');
+  btn.textContent = '⏳ Gerando PDF...';
+  btn.disabled = true;
+
+  try {
+    const { jsPDF } = window.jspdf;
+    const laudo = document.getElementById('laudo');
+
+    // Use html2canvas via CDN
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+    document.head.appendChild(script);
+
+    script.onload = async () => {
+      const canvas = await html2canvas(laudo, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#fff',
+        width: laudo.scrollWidth,
+        height: laudo.scrollHeight
+      });
+
+      const imgData = canvas.toDataURL('image/jpeg', 0.95);
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const pageW = 210;
+      const pageH = 297;
+      const imgW = pageW;
+      const imgH = (canvas.height * pageW) / canvas.width;
+
+      if (imgH <= pageH) {
+        pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
+      } else {
+        // Multi-page
+        let y = 0;
+        while (y < canvas.height) {
+          const sliceH = Math.min(canvas.height - y, (pageH * canvas.width) / pageW);
+          const sliceCanvas = document.createElement('canvas');
+          sliceCanvas.width = canvas.width;
+          sliceCanvas.height = sliceH;
+          const ctx = sliceCanvas.getContext('2d');
+          ctx.drawImage(canvas, 0, -y);
+          const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
+          if (y > 0) pdf.addPage();
+          pdf.addImage(sliceData, 'JPEG', 0, 0, pageW, (sliceH * pageW) / canvas.width);
+          y += sliceH;
+        }
+      }
+
+      const p1 = document.getElementById('p1nome').value.split(' ')[0] || 'Laudo';
+      pdf.save(`Laudo_${p1}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`);
+      btn.textContent = '✅ PDF Gerado!';
+      setTimeout(() => { btn.textContent = '⬇ Gerar & Baixar PDF'; btn.disabled = false; }, 2000);
+    };
+  } catch(e) {
+    btn.textContent = '⬇ Gerar & Baixar PDF';
+    btn.disabled = false;
+    alert('Erro ao gerar PDF: ' + e.message);
+  }
+}
+
+// Resizer Logic
+(function() {
+  const resizer = document.getElementById('dragMe');
+  const sidebar = document.querySelector('.sidebar');
+  let isResizing = false;
+
+  resizer.addEventListener('mousedown', (e) => {
+    isResizing = true;
+    resizer.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!isResizing) return;
+    const newWidth = e.clientX;
+    if (newWidth > 300 && newWidth < 800) {
+      sidebar.style.width = newWidth + 'px';
+      sidebar.style.minWidth = newWidth + 'px';
+    }
+  });
+
+  document.addEventListener('mouseup', () => {
+    isResizing = false;
+    resizer.classList.remove('dragging');
+    document.body.style.cursor = 'default';
+    document.body.style.userSelect = 'auto';
+  });
+})();
+
+// Accordion Logic
+document.querySelectorAll('.section-label').forEach(label => {
+  label.addEventListener('click', () => {
+    label.classList.toggle('collapsed');
+  });
+});
+
+// Custom Select Implementation
+function initCustomSelects() {
+  const selects = document.querySelectorAll('select');
+  
+  selects.forEach(select => {
+    if (select.closest('.custom-select-container')) return;
+    
+    // Create structure
+    const container = document.createElement('div');
+    container.className = 'custom-select-container';
+    select.parentNode.insertBefore(container, select);
+    container.appendChild(select);
+    select.style.display = 'none';
+    
+    const trigger = document.createElement('div');
+    trigger.className = 'custom-select-trigger';
+    trigger.textContent = select.options[select.selectedIndex].text;
+    container.appendChild(trigger);
+    
+    const optionsMenu = document.createElement('div');
+    optionsMenu.className = 'custom-select-options';
+    container.appendChild(optionsMenu);
+    
+    // Populate options
+    Array.from(select.options).forEach((opt, idx) => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = 'custom-select-option' + (idx === select.selectedIndex ? ' selected' : '');
+      optionDiv.textContent = opt.text;
+      
+      // Color logic for bullets
+      const txt = opt.text.toUpperCase();
+      let bColor = '#b0c4d855';
+      if (txt === 'SELECIONE') bColor = 'transparent';
+      else if (txt === 'SIM' || txt === 'APROVADO') bColor = '#4caf50';
+      else if (txt === 'NÃO' || txt === 'REPROVADO') bColor = '#f44336';
+      else if (txt === 'AV. CONDICIONADA MARGEM') bColor = '#03a9f4';
+      else if (txt === 'AV. CONDICIONADA SCR BACEN') bColor = '#00acc1';
+      else if (txt.includes('PENDÊNCIA') || txt.includes('CONDICIONADA')) bColor = '#ff9800';
+      else if (txt === 'PRONTO') bColor = '#2196f3';
+      else if (txt === 'USADO') bColor = '#009688';
+      else if (txt === 'REFORMA') bColor = '#607d8b';
+      else if (txt === 'PLANTA') bColor = '#9c27b0';
+      
+      // Faixas MCMV (Both simplified and full text versions)
+      else if (txt.includes('FAIXA 1')) bColor = '#f44336';
+      else if (txt.includes('FAIXA 2')) bColor = '#ff9800';
+      else if (txt.includes('FAIXA 3')) bColor = '#ffeb3b';
+      else if (txt.includes('FAIXA 4')) bColor = '#4caf50';
+      else if (txt === 'SBPE') bColor = '#2196f3';
+      else if (txt === 'PRO COTISTA') bColor = '#673ab7';
+      
+      // Tipo de Renda
+      else if (txt === 'FORMAL') bColor = '#03a9f4';
+      else if (txt === 'INFORMAL') bColor = '#ff9800';
+      else if (txt === 'MISTA') bColor = '#9c27b0';
+      
+      // Municipalities colors
+      else if (txt === 'NOVA IGUAÇU') bColor = '#007bff';
+      else if (txt === 'NILÓPOLIS') bColor = '#e83e8c';
+      else if (txt === 'BELFORD ROXO') bColor = '#fd7e14';
+      else if (txt === 'SÃO GONÇALO') bColor = '#20c997';
+      else if (txt === 'NITERÓI') bColor = '#6610f2';
+      else if (txt === 'QUEIMADOS') bColor = '#ffc107';
+      else if (txt === 'RIO DE JANEIRO') bColor = '#17a2b8';
+      else if (txt === 'DUQUE DE CAXIAS') bColor = '#6f42c1';
+      else if (txt === 'MESQUITA') bColor = '#28a745';
+      
+      optionDiv.style.setProperty('--bullet-color', bColor);
+      
+      optionDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        select.selectedIndex = idx;
+        trigger.textContent = opt.text;
+        
+        // Mark selected
+        optionsMenu.querySelectorAll('.custom-select-option').forEach(d => d.classList.remove('selected'));
+        optionDiv.classList.add('selected');
+        
+        // Trigger original change event
+        select.dispatchEvent(new Event('change'));
+        
+        // Close menu
+        container.classList.remove('open');
+      });
+      optionsMenu.appendChild(optionDiv);
+    });
+    
+    // Toggle menu
+    trigger.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = container.classList.contains('open');
+      document.querySelectorAll('.custom-select-container').forEach(c => c.classList.remove('open'));
+      if (!isOpen) container.classList.add('open');
+    });
+  });
+  
+  // Close on click outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.custom-select-container').forEach(c => c.classList.remove('open'));
+  });
+}
+
+initCustomSelects();
+</script>
+</body>
+</html>
