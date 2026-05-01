@@ -1009,22 +1009,31 @@
       padding: 20px 10px; 
       overflow-x: auto; 
     }
-    #laudo {
-      transform: scale(0.42); /* Ajustado para caber em telas de 320px+ */
-      transform-origin: top center;
-      margin: 0 auto;
-    }
-    /* Container para evitar que o laudo cortado ou com espaço sobrando */
     .preview-area {
-      min-height: 520px;
-      overflow: hidden;
+      min-height: auto;
+      padding: 20px 0;
       display: flex;
       flex-direction: column;
       align-items: center;
+      width: 100%;
     }
-    .preview-header { font-size: 16px; margin-bottom: 10px; width: 100%; }
+    .laudo-scaler {
+      width: 334px; /* Largura do laudo (794px) * 0.42 */
+      height: 600px; /* Altura aproximada do laudo visível * 0.42 */
+      overflow: visible;
+      position: relative;
+    }
+    #laudo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      transform: scale(0.42);
+      transform-origin: top left;
+      margin: 0;
+    }
+    .preview-header { font-size: 16px; margin-bottom: 20px; text-align: center; width: 100%; }
     .login-card { width: 90% !important; padding: 25px !important; }
-    .field input, .field select { height: 44px; font-size: 16px; } /* Melhora toque no mobile */
+    .field input, .field select { height: 44px; font-size: 16px; }
     
     /* Esconde o botão original na barra lateral */
     .sidebar .btn-generate { display: none; }
@@ -1306,8 +1315,9 @@
   <!-- PREVIEW -->
   <div class="preview-area">
     <div class="preview-header">Preview do Laudo</div>
-    <div id="laudo">
-      <!-- HEADER -->
+    <div class="laudo-scaler">
+      <div id="laudo">
+        <!-- HEADER -->
       <div class="l-header">
         <div class="l-logo-area">
           <img src="public/logo.jpeg" class="l-logo-img" alt="MDS Logo">
@@ -1603,6 +1613,7 @@
         </div>
       </div>
       <div class="l-tagline">MDS &nbsp;•&nbsp; CRÉDITO IMOBILIÁRIO &nbsp;•&nbsp; CONFIANÇA • TRANSPARÊNCIA • REALIZAÇÃO</div>
+      </div>
     </div>
     <!-- Botão de gerar PDF para Mobile -->
     <button class="btn-generate mobile-only" onclick="gerarPDF()">⬇ Gerar & Baixar PDF</button>
