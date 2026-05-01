@@ -247,6 +247,50 @@
   .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
   .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
 
+  /* FORÇA BRUTA PARA TAMANHO DE ÍCONES PEQUENOS */
+  #laudo svg:not(.l-header-svg):not(.l-logo-img):not(.gold) {
+    width: 20px !important;
+    height: 20px !important;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    display: inline-block !important;
+  }
+  
+  /* ÍCONES DOURADOS - SEMPRE GRANDES E DOURADOS */
+  .gold, .gold path {
+    fill: #c9a84c !important;
+  }
+  .l-renda-box .gold { width: 22px !important; height: 22px !important; }
+  .l-legal-info .gold { width: 38px !important; height: 38px !important; }
+  
+  .l-header-icon, .m-icon, .l-legal-icon, .inlined-svg {
+    width: 20px !important;
+    height: 20px !important;
+  }
+
+  .l-logo-img { width: 200px !important; height: 85px !important; }
+  .l-legal-icon { width: 32px !important; height: 32px !important; }
+  
+  /* Ícone dourado específico para Resumo de Renda - FORÇA TOTAL */
+  .l-renda-icon-gold, 
+  .l-renda-icon-gold path,
+  svg.l-renda-icon-gold,
+  svg.l-renda-icon-gold path {
+    fill: #c9a84c !important;
+    color: #c9a84c !important;
+  }
+  
+  .l-renda-icon-gold {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 6px;
+  }
+  
+  /* Garante que os SVGs inlocados tenham a cor correta no PDF */
+  svg path { fill: inherit; }
+  .l-header-icon path, .m-icon path, .l-legal-icon path, .inlined-svg path { fill: #0d2137 !important; }
+  .l-legal-icon path { fill: #c9a84c !important; }
+
   .btn-generate {
     width: 100%;
     padding: 14px;
@@ -372,29 +416,17 @@
     align-items: center;
     justify-content: flex-end;
     padding-right: 35px;
+    overflow: visible;
   }
   
-  .l-dates-bg {
+  .l-header-svg {
     position: absolute;
     top: 0;
     right: 0;
-    bottom: 0;
-    left: 0;
-    background: #0d2137;
-    clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%);
+    width: 220px;
+    height: 100px;
     z-index: 0;
-  }
-  
-  .l-dates-line {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 17px; /* Um pouco mais encostada no azul, conforme pedido */
-    width: 4px; /* Linha de cobre mais grossa */
-    background: #d4af37; 
-    transform: skewX(-12.4deg);
-    transform-origin: top;
-    z-index: 2;
+    pointer-events: none;
   }
   
   .l-dates { 
@@ -445,7 +477,7 @@
     border-top: 1px solid #0d2137; /* Linha fina azul escuro */
     border-bottom: 1px solid #dde3ea;
     margin-top: 8px; /* Espaço para não encostar no header */
-    margin-bottom: 15px;
+    margin-bottom: 5px; /* Reduzido de 15px para 5px */
     height: 60px;
     width: 100%;
   }
@@ -512,7 +544,7 @@
     gap: 0;
     align-items: center;
     border-radius: 12px;
-    margin: 0 10px 15px; /* Quase largura total, mantendo curvas premium */
+    margin: 0 10px 8px; /* Reduzido de 15px para 8px */
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     border: 1px solid #dde3ea;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -666,7 +698,7 @@
     white-space: nowrap;
   }
 
-  .l-body { padding: 16px 10px; }
+  .l-body { padding: 4px 10px 16px 10px; } /* Reduzido padding-top de 16px para 4px */
 
   .l-section-header {
     background: #0d2137;
@@ -676,7 +708,8 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
+    margin-top: 5px; /* Adicionado um pequeno respiro no topo */
     display: flex;
     align-items: center;
     gap: 10px;
@@ -1324,8 +1357,12 @@
         </div>
         <div class="l-title">LAUDO DE ANÁLISE</div>
         <div class="l-header-right">
-          <div class="l-dates-line"></div>
-          <div class="l-dates-bg"></div>
+          <!-- Fundo e Linha em SVG para precisão total no PDF -->
+          <svg class="l-header-svg" viewBox="0 0 220 100" preserveAspectRatio="none">
+            <polygon points="22,0 220,0 220,100 0,100" fill="#0d2137" />
+            <polygon points="17,0 21,0 -1,100 -5,100" fill="#d4af37" />
+          </svg>
+          
           <div class="l-dates">
             <div class="l-date-box">
               <div class="l-date-icon">
@@ -1526,7 +1563,10 @@
             </div>
           </div>
           <div class="l-renda-box">
-            <div class="l-renda-title"><img src="Icones/faixa MCMV.svg" style="width:14px;height:14px;vertical-align:middle;margin-right:6px;filter:invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%);"> RESUMO DE RENDA</div>
+            <div class="l-renda-title">
+              <svg class="gold" width="22" height="22" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:8px;"><path d="m7.5 13a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm0-7a2.5 2.5 0 1 0 2.5 2.5 2.5 2.5 0 0 0 -2.5-2.5zm7.5 17v-.5a7.5 7.5 0 0 0 -15 0v.5a1 1 0 0 0 2 0v-.5a5.5 5.5 0 0 1 11 0v.5a1 1 0 0 0 2 0zm9-5a7 7 0 0 0 -11.667-5.217 1 1 0 1 0 1.334 1.49 5 5 0 0 1 8.333 3.727 1 1 0 0 0 2 0zm-6.5-9a4.5 4.5 0 1 1 4.5-4.5 4.505 4.505 0 0 1 -4.5 4.5zm0-7a2.5 2.5 0 1 0 2.5 2.5 2.5 2.5 0 0 0 -2.5-2.5z"/></svg>
+              RESUMO DE RENDA
+            </div>
             
             <div class="l-renda-sub-title">1º PROPONENTE</div>
             <div class="l-renda-row">
@@ -1609,7 +1649,7 @@
             <b>CERTIFICAÇÃO TÉCNICA</b>
             Documento processado em total conformidade com as normas vigentes do SFH e diretrizes do FGTS.
           </div>
-          <img src="Icones/shield-check.svg" class="l-legal-icon">
+          <svg class="gold" width="38" height="38" viewBox="0 0 24 24" style="flex-shrink:0;"><g id="_01_align_center" data-name="01 align center"><path d="M11.948,24.009l-.354-.157C11.2,23.679,2,19.524,2,12V5.476A2.983,2.983,0,0,1,4.051,2.644L12,.009l7.949,2.635A2.983,2.983,0,0,1,22,5.476V12c0,8.577-9.288,11.755-9.684,11.887ZM12,2.106,4.684,4.532A.992.992,0,0,0,4,5.476V12c0,5.494,6.44,9.058,8.047,9.861C13.651,21.216,20,18.263,20,12V5.476a.992.992,0,0,0-.684-.944Z"/><path d="M11.111,14.542h-.033a1.872,1.872,0,0,1-1.345-.6l-2.306-2.4L8.868,10.16,11.112,12.5l5.181-5.181,1.414,1.414-5.261,5.261A1.873,1.873,0,0,1,11.111,14.542Z"/></g></svg>
         </div>
       </div>
       <div class="l-tagline">MDS &nbsp;•&nbsp; CRÉDITO IMOBILIÁRIO &nbsp;•&nbsp; CONFIANÇA • TRANSPARÊNCIA • REALIZAÇÃO</div>
@@ -1996,8 +2036,11 @@ async function gerarPDF() {
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
       pdf.addImage(imgData, 'JPEG', xOffset, yOffset, imgW, imgH);
 
-      const p1 = document.getElementById('p1nome').value.split(' ')[0] || 'Laudo';
-      pdf.save(`Laudo_${p1}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`);
+      const p1Raw = document.getElementById('p1nome').value.trim() || 'Laudo';
+      const p1Clean = p1Raw.replace(/\s+/g, '_'); // Troca espaços por underline
+      const date = new Date().toLocaleDateString('pt-BR').replace(/\//g, '-');
+      
+      pdf.save(`Laudo_${p1Clean}_${date}.pdf`);
       btn.textContent = '✅ PDF Gerado!';
       setTimeout(() => { btn.textContent = '⬇ Gerar & Baixar PDF'; btn.disabled = false; }, 2000);
     };
@@ -2147,6 +2190,49 @@ function initCustomSelects() {
   });
 }
 
+// Função para transformar imagens SVG em código inline (para aceitar CSS e sair colorido no PDF)
+function inlineSVGs() {
+  document.querySelectorAll('img[src$=".svg"]').forEach(img => {
+    const imgURL = img.src;
+    const imgID = img.id;
+    const imgClass = img.className;
+
+    fetch(imgURL)
+      .then(response => response.text())
+      .then(data => {
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(data, 'text/xml');
+        const svg = xmlDoc.getElementsByTagName('svg')[0];
+
+        if (svg) {
+          if (imgID) svg.setAttribute('id', imgID);
+          // Força o tamanho direto no atributo e no estilo para não ter erro
+          svg.setAttribute('width', '20');
+          svg.setAttribute('height', '20');
+          svg.style.width = '20px';
+          svg.style.height = '20px';
+          
+          if (imgClass) {
+            svg.setAttribute('class', imgClass + ' inlined-svg');
+            // Define a cor com base na classe: dourado para gold/legal-icon, azul escuro para o resto
+            const isGold = imgClass.includes('gold') || imgClass.includes('l-legal-icon');
+            const targetColor = isGold ? '#c9a84c' : '#0d2137';
+            
+            const paths = svg.getElementsByTagName('path');
+            for (let p of paths) p.setAttribute('fill', targetColor);
+            svg.setAttribute('fill', targetColor);
+          }
+          svg.removeAttribute('xmlns:a');
+          if (!svg.getAttribute('viewBox') && svg.getAttribute('height') && svg.getAttribute('width')) {
+            svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
+          }
+          img.parentNode.replaceChild(svg, img);
+        }
+      });
+  });
+}
+
+window.addEventListener('load', inlineSVGs);
 initCustomSelects();
 </script>
 </body>
