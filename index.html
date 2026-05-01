@@ -384,8 +384,10 @@
     justify-content: space-between;
     align-items: center;
     position: relative;
-    overflow: hidden; /* Volta a esconder o que sai fora */
+    overflow: visible; 
     padding: 0;
+    margin: 0 0 8px 0; /* ADICIONA O GAP EMBAIXO */
+    border: none;
     z-index: 10;
   }
   .l-logo-area { 
@@ -420,15 +422,17 @@
     justify-content: flex-end;
     padding-right: 35px;
     overflow: visible;
+    align-self: stretch; /* FORÇA O ESTICAMENTO NO FLEX PAREI */
   }
   
   .l-header-svg {
     position: absolute;
     top: 0;
     right: 0;
-    width: 220px;
-    height: 100px;
+    width: 221px;
+    height: 100%; 
     z-index: 0;
+    display: block;
     pointer-events: none;
   }
   
@@ -477,12 +481,13 @@
     display: grid;
     grid-template-columns: 1.1fr 1fr 1.2fr 1fr; /* Mais espaço para o município */
     background: #fff;
-    border-top: 1px solid #0d2137; /* Linha fina azul escuro */
-    border-bottom: 1px solid #dde3ea;
-    margin-top: 8px; /* Espaço para não encostar no header */
-    margin-bottom: 5px; /* Reduzido de 15px para 5px */
+    border: 1px solid #dde3ea; /* Borda uniforme e fina em todo o card */
+    position: relative;
+    z-index: 20; 
+    border-radius: 8px;
+    margin: 0 10px 10px; 
     height: 60px;
-    width: 100%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
   }
 
   .l-info-item {
@@ -547,7 +552,7 @@
     gap: 0;
     align-items: center;
     border-radius: 12px;
-    margin: 0 10px 8px; /* Reduzido de 15px para 8px */
+    margin: 15px 10px 5px; /* Mantém o topo baixo, mas sobe o conteúdo de baixo */
     box-shadow: 0 4px 20px rgba(0,0,0,0.04);
     border: 1px solid #dde3ea;
     transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -706,23 +711,30 @@
   .l-section-header {
     background: #0d2137;
     color: #c9a84c;
-    padding: 8px 15px;
+    padding: 8px 12px;
     font-size: 11px;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    margin-top: 5px; /* Adicionado um pequeno respiro no topo */
+    margin-top: 5px; 
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
     border-radius: 8px;
   }
-  .l-obs-header { background: #0d2137; color: #c9a84c; padding: 8px 15px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; border-radius: 8px; margin: 0; }
+  .l-obs-header { background: #0d2137; color: #c9a84c; padding: 8px 12px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 8px; border-radius: 8px; margin: 0; }
   .l-header-icon {
     width: 16px;
     height: 16px;
-    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%); /* Gold/Bronze */
+    margin-right: 8px;
+    vertical-align: middle;
+    position: relative;
+    top: -1px;
+  }
+  /* Ícones dentro de cabeçalhos de seção mantêm o dourado */
+  .l-section-header .l-header-icon, .l-obs-header .l-header-icon {
+    filter: invert(74%) sepia(21%) saturate(1205%) hue-rotate(5deg) brightness(95%) contrast(89%);
   }
   .l-section-header .icon { font-size: 14px; }
 
@@ -790,16 +802,68 @@
     padding-bottom: 2px;
   }
 
-  .l-conditions { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  .l-cond-table { width: 100%; border-collapse: collapse; }
+  .l-conditions { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 10px; 
+    margin-bottom: 16px; 
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+  }
+  .l-cond-table { width: 100%; border-collapse: separate; border-spacing: 0; }
   .l-cond-table tr { border-bottom: 1px solid #f0f0f0; }
-  .l-cond-table td { padding: 6px 8px; font-size: 10px; }
-  .l-cond-table td:first-child { color: #555; font-size: 9px; }
-  .l-cond-table td:last-child { font-weight: 700; color: #1a1a1a; text-align: right; }
-  .l-total-row td { background: #0d2137 !important; color: #fff !important; font-weight: 900 !important; font-size: 11px !important; }
-  .l-prestacao-row td { background: #c9a84c !important; color: #0d2137 !important; font-weight: 900 !important; font-size: 12px !important; }
-  .l-siric-row td { background: #fff8e6 !important; }
-  .l-star { color: #c9a84c; }
+  .l-cond-table tr:last-child { border-bottom: none; }
+  .l-cond-table td { padding: 6px 8px; font-size: 10px; vertical-align: middle; white-space: nowrap; }
+  .l-cond-table td:first-child { color: #555; font-size: 9px; vertical-align: middle; padding-left: 4px; }
+  .l-cond-table td:first-child b { color: #1a1a1a; font-weight: 900 !important; }
+  .l-cond-table td[style*="color"] b { color: inherit !important; }
+  .l-cond-table td:last-child { font-weight: 700; color: #1a1a1a; text-align: right; vertical-align: middle; white-space: nowrap; }
+  .l-total-row td { background: #0d2137 !important; color: #c9a84c !important; font-weight: 800 !important; font-size: 11px !important; padding: 10px 15px !important; }
+  .l-total-row td:first-child { border-radius: 8px 0 0 8px !important; }
+  .l-total-row td:last-child { border-radius: 0 8px 8px 0 !important; }
+  
+  .l-siric-card {
+    border: 2px solid #c9a84c;
+    border-radius: 10px;
+    overflow: hidden;
+    width: 100%;
+    background: #fff;
+    margin: 0;
+  }
+  .l-siric-card-siric-row {
+    display: flex;
+    background: #fffdf5;
+    border-bottom: 1px solid #f0e0b0;
+    align-items: center;
+  }
+  .l-siric-card-item {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 8px;
+    gap: 4px;
+  }
+  .l-siric-card-full-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+  }
+  .l-siric-card-prestacao {
+    background: #c9a84c;
+    color: #0d2137;
+    font-weight: 900;
+  }
+  .l-siric-card-prestacao .value { font-size: 14px; }
+  .l-siric-card-juros { background: #fff; }
+  .l-siric-card .label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; color: #666; }
+  .l-siric-card .value { font-size: 13px; font-weight: 700; color: #0d2137; }
+  .l-siric-divider { width: 1px; height: 20px; background: #e0d0a0; }
+  .l-star { color: #c9a84c; margin-right: 4px; font-size: 12px; }
 
   .l-parecer {
     background: #f8f9fa;
@@ -1365,8 +1429,8 @@
         <div class="l-header-right">
           <!-- Fundo e Linha em SVG para precisão total no PDF -->
           <svg class="l-header-svg" viewBox="0 0 220 100" preserveAspectRatio="none">
-            <polygon points="22,0 220,0 220,100 0,100" fill="#0d2137" />
-            <polygon points="17,0 21,0 -1,100 -5,100" fill="#d4af37" />
+            <polygon points="32,0 220,0 220,100 10,100" fill="#0d2137" />
+            <polygon points="26,0 30,0 8,100 4,100" fill="#d4af37" />
           </svg>
           
           <div class="l-dates">
@@ -1599,23 +1663,47 @@
         <div class="l-section-header"><img src="Icones/house-building.svg" class="l-header-icon"> CONDIÇÕES APROVADAS</div>
         <div class="l-conditions">
           <table class="l-cond-table">
-            <tr><td><b>🏠 VALOR DE AVALIAÇÃO DO IMÓVEL</b></td><td><b id="v-valorAval">-</b></td></tr>
-            <tr><td>🏦 VALOR DO FINANCIAMENTO</td><td id="v-valorFinanc">-</td></tr>
-            <tr><td style="color:#2e7d32">💰 SUBSÍDIO CONCEDIDO</td><td style="color:#2e7d32" id="v-subsidio">-</td></tr>
-            <tr><td>🔑 FGTS UTILIZADO</td><td id="v-fgts">-</td></tr>
+            <tr><td><b><img src="Icones/home.svg" class="l-header-icon"> VALOR DE AVALIAÇÃO DO IMÓVEL</b></td><td><b id="v-valorAval">-</b></td></tr>
+            <tr><td><img src="Icones/building.svg" class="l-header-icon"> VALOR DO FINANCIAMENTO</td><td id="v-valorFinanc">-</td></tr>
+            <tr><td style="color:#2e7d32"><b><img src="Icones/usd-circle.svg" class="l-header-icon"> SUBSÍDIO CONCEDIDO</b></td><td style="color:#2e7d32" id="v-subsidio"><b>-</b></td></tr>
+            <tr><td><img src="Icones/dollar.svg" class="l-header-icon"> FGTS UTILIZADO</td><td id="v-fgts">-</td></tr>
             <tr class="l-total-row"><td>TOTAL DOS VALORES</td><td id="v-totalValores">-</td></tr>
 
           </table>
           <div>
             <table class="l-cond-table">
-              <tr><td>ENQUADRAMENTO / FAIXA</td><td id="v-enquadramento">-</td></tr>
-              <tr><td>PRAZO DO FINANCIAMENTO</td><td id="v-prazo">-</td></tr>
-              <tr><td>📉 TABELA</td><td id="v-tabela">-</td></tr>
-              <tr><td>📊 COTA SIRIC (%)</td><td id="v-cotaSiric">-</td></tr>
-              <tr class="l-prestacao-row"><td>1ª PRESTAÇÃO (FINANCIAMENTO)</td><td id="v-prestacao">-</td></tr>
-              <tr class="l-siric-row"><td><span class="l-star">★</span> PARCELA SIRIC</td><td><b id="v-siric">-</b></td></tr>
-              <tr class="l-siric-row"><td>COTA SIRIC</td><td id="v-cotaSiric2">-</td></tr>
-              <tr><td>JUROS EFETIVOS (a.a.)</td><td id="v-juros2">-</td></tr>
+              <tr><td><img src="Icones/assessment.svg" class="l-header-icon"> ENQUADRAMENTO / FAIXA</td><td id="v-enquadramento">-</td></tr>
+              <tr><td><img src="Icones/hourglass-end.svg" class="l-header-icon"> PRAZO DO FINANCIAMENTO</td><td id="v-prazo">-</td></tr>
+               <tr><td><img src="Icones/calculator-money.svg" class="l-header-icon"> TABELA</td><td id="v-tabela">-</td></tr>
+              <tr><td><img src="Icones/growth-chart-invest.svg" class="l-header-icon"> COTA SIRIC (%)</td><td id="v-cotaSiric">-</td></tr>
+              <tr>
+                <td colspan="2" style="padding: 0;">
+                  <div class="l-siric-card">
+                    <!-- Linha 1: SIRIC (Lado a Lado) -->
+                    <div class="l-siric-card-siric-row">
+                      <div class="l-siric-card-item">
+                        <span class="label"><span class="l-star">★</span> PARCELA SIRIC</span>
+                        <span class="value" id="v-siric">-</span>
+                      </div>
+                      <div class="l-siric-divider"></div>
+                      <div class="l-siric-card-item">
+                        <span class="label">COTA SIRIC</span>
+                        <span class="value" id="v-cotaSiric2">-</span>
+                      </div>
+                    </div>
+                    <!-- Linha 2: 1ª Prestação -->
+                    <div class="l-siric-card-full-row l-siric-card-prestacao">
+                      <span class="label" style="color: #0d2137; font-weight: 800;">1ª PRESTAÇÃO (FINANCIAMENTO)</span>
+                      <span class="value" id="v-prestacao">-</span>
+                    </div>
+                    <!-- Linha 3: Juros -->
+                    <div class="l-siric-card-full-row l-siric-card-juros">
+                      <span class="label">JUROS EFETIVOS (a.a.)</span>
+                      <span class="value" id="v-juros2">-</span>
+                    </div>
+                  </div>
+                </td>
+              </tr>
 
             </table>
           </div>
@@ -1758,7 +1846,7 @@ const bindings = [
   ['valorFinanc','v-valorFinanc'],
   ['subsidio','v-subsidio'],
   ['fgts','v-fgts'],
-  ['prazo','v-prazo'],
+  ['prazo','v-prazo', (v) => v ? v + ' meses' : '-'],
   ['tabela','v-tabela'],
   ['totalValores','v-totalValores'],
   ['prestacao','v-prestacao'], ['siric','v-siric'],
@@ -1766,7 +1854,7 @@ const bindings = [
   ['cargo','v-cargo'], ['creci','v-creci'],
   ['obsVenda','v-obsVenda', (v) => v.trim() || 'Nenhuma observação registrada.'],
 ];
-bindings.forEach(([a, b]) => bind(a, b));
+bindings.forEach(([a, b, c]) => bind(a, b, c));
 bindRenda();
 bindCondicoes();
 
@@ -1901,7 +1989,7 @@ function bindCondicoes() {
     ['valorFinanc', 'subsidio', 'fgts', 'totalValores', 'valorAval', 'prestacao', 'siric'].forEach(id => {
       const input = document.getElementById(id);
       const prev = document.getElementById('v-' + id);
-      if (input && prev) prev.textContent = input.value;
+      if (input && prev) prev.textContent = input.value || '-';
     });
   };
 
@@ -2267,7 +2355,7 @@ function initCustomSelects() {
 
 // Função para transformar imagens SVG em código inline (para aceitar CSS e sair colorido no PDF)
 function inlineSVGs() {
-  document.querySelectorAll('img[src$=".svg"]').forEach(img => {
+  document.querySelectorAll('img.l-header-icon[src$=".svg"]').forEach(img => {
     const imgURL = img.src;
     const imgID = img.id;
     const imgClass = img.className;
@@ -2281,22 +2369,27 @@ function inlineSVGs() {
 
         if (svg) {
           if (imgID) svg.setAttribute('id', imgID);
-          // Força o tamanho direto no atributo e no estilo para não ter erro
-          svg.setAttribute('width', '20');
-          svg.setAttribute('height', '20');
-          svg.style.width = '20px';
-          svg.style.height = '20px';
+          if (imgClass) svg.setAttribute('class', imgClass + ' inlined-svg');
           
-          if (imgClass) {
-            svg.setAttribute('class', imgClass + ' inlined-svg');
-            // Define a cor com base na classe: dourado para gold/legal-icon, azul escuro para o resto
-            const isGold = imgClass.includes('gold') || imgClass.includes('l-legal-icon');
-            const targetColor = isGold ? '#c9a84c' : '#0d2137';
-            
-            const paths = svg.getElementsByTagName('path');
-            for (let p of paths) p.setAttribute('fill', targetColor);
-            svg.setAttribute('fill', targetColor);
+          // Cor padrão
+          let targetColor = '#0d2137';
+          if (imgClass && (imgClass.includes('gold') || imgClass.includes('l-legal-icon'))) {
+            targetColor = '#c9a84c';
           }
+
+          // Ajuste de traço fino apenas para estes ícones
+          const elements = svg.querySelectorAll('path, circle, rect, polyline, polygon, ellipse');
+          for (let el of elements) {
+            const hasStroke = el.getAttribute('stroke') && el.getAttribute('stroke') !== 'none';
+            const hasFill = el.getAttribute('fill') && el.getAttribute('fill') !== 'none';
+
+            if (hasFill) el.setAttribute('fill', targetColor);
+            if (hasStroke) {
+              el.setAttribute('stroke', targetColor);
+              el.setAttribute('stroke-width', '1.2');
+            }
+          }
+
           svg.removeAttribute('xmlns:a');
           if (!svg.getAttribute('viewBox') && svg.getAttribute('height') && svg.getAttribute('width')) {
             svg.setAttribute('viewBox', '0 0 ' + svg.getAttribute('width') + ' ' + svg.getAttribute('height'));
