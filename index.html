@@ -1315,7 +1315,7 @@
         </select>
       </div>
       <div class="row3">
-        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%"></div>
+        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%" readonly></div>
         <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" placeholder="5,64%"></div>
         <div class="field"><label>Faixa MCMV</label>
           <select id="faixaMCMV">
@@ -1855,26 +1855,50 @@ function bindCondicoes() {
   const vFGTS = document.getElementById('fgts');
   const vTotal = document.getElementById('totalValores');
   const vAval = document.getElementById('valorAval');
+  const vPrestacao = document.getElementById('prestacao');
+  const vSiric = document.getElementById('siric');
 
-  [vFinanc, vSubsidio, vFGTS, vAval].forEach(el => maskCurrency(el));
+  // Apply masks to ALL currency fields
+  [vFinanc, vSubsidio, vFGTS, vAval, vPrestacao, vSiric].forEach(el => {
+    if (el) maskCurrency(el);
+  });
 
   const parse = (v) => parseFloat(v.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
   const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   const update = () => {
-    const total = parse(vFinanc.value) + parse(vSubsidio.value) + parse(vFGTS.value);
+    const vFinancNum = parse(vFinanc.value);
+    const vSubsidioNum = parse(vSubsidio.value);
+    const vFGTSNum = parse(vFGTS.value);
+    const vAvalNum = parse(vAval.value);
+
+    // Total Calculation
+    const total = vFinancNum + vSubsidioNum + vFGTSNum;
     vTotal.value = fmt(total);
+
+    // Quota Calculation (Financing / Valuation)
+    if (vAvalNum > 0) {
+      const cotaCalc = (vFinancNum / vAvalNum) * 100;
+      const cotaVal = Math.min(100, Math.round(cotaCalc));
+      const cotaStr = cotaVal + '%';
+      document.getElementById('cota').value = cotaStr;
+      document.getElementById('v-cota').textContent = cotaStr;
+      if (document.getElementById('v-cota2')) document.getElementById('v-cota2').textContent = cotaStr;
+    } else {
+      document.getElementById('cota').value = '0%';
+      document.getElementById('v-cota').textContent = '-';
+    }
     
-    // Update previews
-    ['valorFinanc', 'subsidio', 'fgts', 'totalValores', 'valorAval'].forEach(id => {
-      const val = document.getElementById(id).value;
+    // Update all previews including prestacao and siric
+    ['valorFinanc', 'subsidio', 'fgts', 'totalValores', 'valorAval', 'prestacao', 'siric'].forEach(id => {
+      const input = document.getElementById(id);
       const prev = document.getElementById('v-' + id);
-      if (prev) prev.textContent = val;
+      if (input && prev) prev.textContent = input.value;
     });
   };
 
-  [vFinanc, vSubsidio, vFGTS, vAval].forEach(el => {
-    el.addEventListener('input', update);
+  [vFinanc, vSubsidio, vFGTS, vAval, vPrestacao, vSiric].forEach(el => {
+    if (el) el.addEventListener('input', update);
   });
   update();
 }
@@ -1932,28 +1956,7 @@ document.getElementById('enquadramento').addEventListener('change', (e) => {
   document.getElementById('v-faixa2').textContent = faixaText;
 });
 
-// Cota Financ. Masking
-const cotaInput = document.getElementById('cota');
-cotaInput.addEventListener('input', (e) => {
-  let v = e.target.value.replace(/\D/g, '');
-  if (v !== '') {
-    let num = parseInt(v);
-    if (num > 100) num = 100;
-    e.target.value = num + '%';
-    document.getElementById('v-cota').textContent = num + '%';
-  } else {
-    e.target.value = '';
-    document.getElementById('v-cota').textContent = '-';
-  }
-});
-cotaInput.addEventListener('keyup', (e) => {
-  const pos = cotaInput.value.indexOf('%');
-  if (pos !== -1) cotaInput.setSelectionRange(pos, pos);
-});
-cotaInput.addEventListener('click', () => {
-  const pos = cotaInput.value.indexOf('%');
-  if (pos !== -1) cotaInput.setSelectionRange(pos, pos);
-});
+// Cota calculations are now automatic in bindCondicoes
 
 // Juros Masking (Financeiro Style: 0,00%)
 const jurosInput = document.getElementById('juros');
@@ -2173,6 +2176,8 @@ function initCustomSelects() {
       else if (txt.includes('FAIXA 4')) bColor = '#4caf50';
       else if (txt === 'SBPE') bColor = '#2196f3';
       else if (txt === 'PRO COTISTA') bColor = '#673ab7';
+      else if (txt === 'PRICE') bColor = '#00bcd4';
+      else if (txt === 'SAC') bColor = '#8bc34a';
       
       // Tipo de Renda
       else if (txt === 'FORMAL') bColor = '#03a9f4';
