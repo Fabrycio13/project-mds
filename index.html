@@ -1222,31 +1222,6 @@
       </div>
     </div>
 
-    <div class="section-label">Resultado</div>
-    <div class="section-content">
-      <div class="field"><label>Resultado da Análise</label>
-        <select id="statusAnalise" onchange="updateStatus()">
-          <option selected disabled value="">SELECIONE</option>
-          <option value="aprovado">APROVADO</option>
-          <option value="pendencia">APROVADO C/ PENDÊNCIA</option>
-          <option value="reprovado">REPROVADO</option>
-          <option value="margem">AV. CONDICIONADA MARGEM</option>
-          <option value="bacen">AV. CONDICIONADA SCR BACEN</option>
-        </select>
-      </div>
-      <div class="row3">
-        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%"></div>
-        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" placeholder="5,64%"></div>
-        <div class="field"><label>Faixa MCMV</label>
-          <select id="faixaMCMV">
-            <option selected disabled value="">SELECIONE</option>
-            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
-          </select>
-        </div>
-      </div>
-      <div class="field"><label>Renda Total Apurada</label><input type="text" id="rendaTotal" placeholder="R$ 0,00" readonly></div>
-    </div>
-
     <div class="section-label">1º Proponente</div>
     <div class="section-content">
       <div class="field"><label>Nome Completo</label><input type="text" id="p1nome" placeholder="NOME DO PROPONENTE"></div>
@@ -1305,7 +1280,7 @@
         <div class="field"><label>Subsídio Concedido</label><input type="text" id="subsidio" placeholder="R$ 0,00"></div>
       </div>
       <div class="field"><label>FGTS Utilizado</label><input type="text" id="fgts" placeholder="R$ 0,00"></div>
-      <div class="field"><label>Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00"></div>
+      <div class="field"><label>Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00" readonly></div>
       <div class="row2">
         <div class="field"><label>Prazo (meses)</label><input type="text" id="prazo" placeholder="360 meses"></div>
         <div class="field"><label>Tabela</label><select id="tabela"><option selected disabled value="">SELECIONE</option><option>PRICE</option><option>SAC</option></select></div>
@@ -1325,6 +1300,31 @@
           <option>PRO COTISTA</option>
         </select>
       </div>
+    </div>
+
+    <div class="section-label">Resultado</div>
+    <div class="section-content">
+      <div class="field"><label>Resultado da Análise</label>
+        <select id="statusAnalise" onchange="updateStatus()">
+          <option selected disabled value="">SELECIONE</option>
+          <option value="aprovado">APROVADO</option>
+          <option value="pendencia">APROVADO C/ PENDÊNCIA</option>
+          <option value="reprovado">REPROVADO</option>
+          <option value="margem">AV. CONDICIONADA MARGEM</option>
+          <option value="bacen">AV. CONDICIONADA SCR BACEN</option>
+        </select>
+      </div>
+      <div class="row3">
+        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%"></div>
+        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" placeholder="5,64%"></div>
+        <div class="field"><label>Faixa MCMV</label>
+          <select id="faixaMCMV">
+            <option selected disabled value="">SELECIONE</option>
+            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
+          </select>
+        </div>
+      </div>
+      <div class="field"><label>Renda Total Apurada</label><input type="text" id="rendaTotal" placeholder="R$ 0,00" readonly></div>
     </div>
 
     <div class="section-label">Observações</div>
@@ -1747,9 +1747,13 @@ const bindings = [
   ['p2nome','v-p2nome'],
   ['p2prof','v-p2prof'], ['p2prof','v-p2prof2'],
   ['dependente','v-dependente'], ['cotista','v-cotista'],
-  ['valorAval','v-valorAval'], ['valorFinanc','v-valorFinanc'],
-  ['subsidio','v-subsidio'], ['fgts','v-fgts'], ['entrada','v-entrada'],
-  ['totalValores','v-totalValores'], ['prazo','v-prazo'], ['tabela','v-tabela'],
+  ['valorAval','v-valorAval'],
+  ['valorFinanc','v-valorFinanc'],
+  ['subsidio','v-subsidio'],
+  ['fgts','v-fgts'],
+  ['prazo','v-prazo'],
+  ['tabela','v-tabela'],
+  ['totalValores','v-totalValores'],
   ['prestacao','v-prestacao'], ['siric','v-siric'],
   ['enquadramento','v-enquadramento'], ['indexador','v-indexador'],
   ['cargo','v-cargo'], ['creci','v-creci'],
@@ -1757,6 +1761,7 @@ const bindings = [
 ];
 bindings.forEach(([a, b]) => bind(a, b));
 bindRenda();
+bindCondicoes();
 
 // CPF Mask
 function maskCPF(el, previewId) {
@@ -1842,6 +1847,36 @@ function bindRenda() {
   p1.addEventListener('input', updateAll);
   p2.addEventListener('input', updateAll);
   updateAll();
+}
+
+function bindCondicoes() {
+  const vFinanc = document.getElementById('valorFinanc');
+  const vSubsidio = document.getElementById('subsidio');
+  const vFGTS = document.getElementById('fgts');
+  const vTotal = document.getElementById('totalValores');
+  const vAval = document.getElementById('valorAval');
+
+  [vFinanc, vSubsidio, vFGTS, vAval].forEach(el => maskCurrency(el));
+
+  const parse = (v) => parseFloat(v.replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+  const fmt = (v) => 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  const update = () => {
+    const total = parse(vFinanc.value) + parse(vSubsidio.value) + parse(vFGTS.value);
+    vTotal.value = fmt(total);
+    
+    // Update previews
+    ['valorFinanc', 'subsidio', 'fgts', 'totalValores', 'valorAval'].forEach(id => {
+      const val = document.getElementById(id).value;
+      const prev = document.getElementById('v-' + id);
+      if (prev) prev.textContent = val;
+    });
+  };
+
+  [vFinanc, vSubsidio, vFGTS, vAval].forEach(el => {
+    el.addEventListener('input', update);
+  });
+  update();
 }
 
 // Update Proponent Preview Selects
