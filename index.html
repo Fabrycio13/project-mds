@@ -1967,36 +1967,34 @@ async function gerarPDF() {
         scale: 2,
         useCORS: true,
         backgroundColor: '#fff',
-        width: laudo.scrollWidth,
-        height: laudo.scrollHeight
+        width: 794, // Força a largura original do laudo na captura
+        onclone: (clonedDoc) => {
+          // No clone usado para o PDF, removemos o encolhimento do celular
+          const clonedLaudo = clonedDoc.getElementById('laudo');
+          clonedLaudo.style.transform = 'none';
+          clonedLaudo.style.margin = '0';
+          clonedLaudo.style.width = '794px';
+        }
       });
 
       const imgData = canvas.toDataURL('image/jpeg', 0.95);
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-
       const pageW = 210;
       const pageH = 297;
-      const imgW = pageW;
-      const imgH = (canvas.height * pageW) / canvas.width;
+      let imgW = pageW;
+      let imgH = (canvas.height * pageW) / canvas.width;
+      let xOffset = 0;
+      let yOffset = 0;
 
-      if (imgH <= pageH) {
-        pdf.addImage(imgData, 'JPEG', 0, 0, imgW, imgH);
-      } else {
-        // Multi-page
-        let y = 0;
-        while (y < canvas.height) {
-          const sliceH = Math.min(canvas.height - y, (pageH * canvas.width) / pageW);
-          const sliceCanvas = document.createElement('canvas');
-          sliceCanvas.width = canvas.width;
-          sliceCanvas.height = sliceH;
-          const ctx = sliceCanvas.getContext('2d');
-          ctx.drawImage(canvas, 0, -y);
-          const sliceData = sliceCanvas.toDataURL('image/jpeg', 0.95);
-          if (y > 0) pdf.addPage();
-          pdf.addImage(sliceData, 'JPEG', 0, 0, pageW, (sliceH * pageW) / canvas.width);
-          y += sliceH;
-        }
+      // Se a altura calculada for maior que a folha, reduzimos para caber em 1 página
+      if (imgH > pageH) {
+        const ratio = pageH / imgH;
+        imgH = pageH;
+        imgW = imgW * ratio;
+        xOffset = (pageW - imgW) / 2; // Centraliza horizontalmente se encolher
       }
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      pdf.addImage(imgData, 'JPEG', xOffset, yOffset, imgW, imgH);
 
       const p1 = document.getElementById('p1nome').value.split(' ')[0] || 'Laudo';
       pdf.save(`Laudo_${p1}_${new Date().toLocaleDateString('pt-BR').replace(/\//g,'-')}.pdf`);
