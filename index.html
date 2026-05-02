@@ -425,8 +425,8 @@
 
   /* SCROLLBARS GLOBAL */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 10px;
+    height: 10px;
   }
   ::-webkit-scrollbar-track {
     background: #0f1923;
@@ -434,9 +434,33 @@
   ::-webkit-scrollbar-thumb {
     background: #c9a84c;
     border-radius: 10px;
+    border: 2px solid #0f1923;
   }
   ::-webkit-scrollbar-thumb:hover {
     background: #e8c96d;
+  }
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  /* Botão de Cima (Topo) */
+  ::-webkit-scrollbar-button:vertical:start:decrement {
+    display: block;
+    background-color: #0f1923;
+    background-repeat: no-repeat;
+    background-size: 8px;
+    background-position: center;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23c9a84c'><polygon points='50,0 0,100 100,100'/></svg>");
+  }
+  /* Botão de Baixo (Fundo) */
+  ::-webkit-scrollbar-button:vertical:end:increment {
+    display: block;
+    background-color: #0f1923;
+    background-repeat: no-repeat;
+    background-size: 8px;
+    background-position: center;
+    height: 14px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23c9a84c'><polygon points='50,100 0,0 100,0'/></svg>");
   }
 
   /* RESIZER */
