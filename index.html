@@ -2054,7 +2054,18 @@
       </div>
     </div>
     <!-- Botão de gerar PDF para Mobile -->
-    <button class="btn-generate mobile-only" onclick="gerarPDF()">⬇ Gerar & Baixar PDF</button>
+    <button class="btn-generate mobile-only" onclick="gerarPDF()">
+      <span class="btn-transition"></span>
+      <span class="btn-gradient"></span>
+      <span class="btn-label">
+        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v4"></path>
+          <polyline points="7 10 12 15 17 10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Gerar & Baixar PDF
+      </span>
+    </button>
   </div>
 </div>
 
