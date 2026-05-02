@@ -396,12 +396,10 @@
     padding-left: 24px;
     z-index: 1;
   }
-  .l-logo-img {
-    height: 85px;
-    width: 200px; 
+  .l-logo-img { 
+    width: 200px !important; 
+    height: 85px !important; 
     object-fit: contain;
-    object-position: center;
-    margin-top: 8px; /* Move o logo para baixo sem alterar o header */
   }
   .l-title { 
     color: #0d2137; 
@@ -1149,68 +1147,180 @@
   /* BOTÃO MOBILE ESCONDIDO POR PADRÃO */
   .btn-generate.mobile-only { display: none; }
 
-  /* LOGIN GATE */
+  /* LOGIN GATE PREMIUM REFINEMENT */
   #login-gate {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: #0a1018;
+    background: #05080a;
     z-index: 9999;
     display: flex;
     align-items: center;
     justify-content: center;
     font-family: 'Segoe UI', sans-serif;
+    overflow: hidden;
   }
+  
+  #dot-grid-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
   .login-card {
-    background: #161f2a;
-    padding: 40px;
-    border-radius: 16px;
-    border: 1px solid #263040;
-    width: 350px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    background: rgba(22, 31, 42, 0.8);
+    backdrop-filter: blur(12px);
+    padding: 30px 45px 25px;
+    border-radius: 4px;
+    border: 1px solid rgba(201, 168, 76, 0.2);
+    width: 480px;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.8), inset 0 0 20px rgba(201, 168, 76, 0.05);
     text-align: center;
+    position: relative;
+    z-index: 1;
+    animation: cardEntry 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-  .login-card h2 { color: #c9a84c; margin-bottom: 20px; font-size: 18px; letter-spacing: 2px; text-transform: uppercase; }
-  .login-field { margin-bottom: 15px; text-align: left; }
-  .login-field label { display: block; font-size: 11px; color: #7a9ab5; margin-bottom: 6px; text-transform: uppercase; }
+
+  @keyframes cardEntry {
+    0% { opacity: 0; transform: translateY(30px) scale(0.98); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .login-card h2 { 
+    color: #c9a84c; 
+    margin-bottom: 35px; 
+    font-size: 14px; 
+    letter-spacing: 5px; 
+    text-transform: uppercase;
+    font-weight: 800;
+    animation: fadeIn 1s ease-out 0.3s both;
+  }
+
+  .login-field { margin-bottom: 18px; text-align: left; animation: fadeIn 1s ease-out var(--delay) both; }
+  .login-field label { 
+    display: block; 
+    font-size: 12px; 
+    color: #c9a84c; 
+    margin-bottom: 8px; 
+    text-transform: uppercase; 
+    letter-spacing: 1.5px;
+    font-weight: 700;
+    opacity: 0.8;
+  }
   .login-field input {
     width: 100%;
-    height: 40px;
-    padding: 0 12px;
-    background: #0f1923;
-    border: 1px solid #263040;
-    border-radius: 8px;
+    height: 48px;
+    padding: 0 16px;
+    background: rgba(15, 25, 35, 0.6);
+    border: 1px solid rgba(201, 168, 76, 0.1);
+    border-radius: 2px;
     color: #fff;
     outline: none;
+    font-size: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.5px;
   }
-  .login-field input:focus { border-color: #c9a84c; }
+  .login-field input:focus { 
+    border-color: #c9a84c; 
+    background: rgba(15, 25, 35, 0.9);
+    box-shadow: 0 0 15px rgba(201, 168, 76, 0.1);
+  }
   .btn-login {
     width: 100%;
-    padding: 12px;
+    padding: 18px;
     background: #c9a84c;
-    color: #0f1923;
+    color: #0d2137;
     border: none;
-    border-radius: 8px;
-    font-weight: 800;
+    border-radius: 2px;
+    font-weight: 900;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
     cursor: pointer;
-    margin-top: 10px;
+    margin-top: 15px;
+    transition: all 0.3s;
+    animation: fadeIn 1s ease-out 0.7s both;
   }
-  .login-error { color: #ff4d4d; font-size: 12px; margin-top: 10px; display: none; }
+  .btn-login:hover {
+    background: #e8c96d;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(201, 168, 76, 0.3);
+  }
+  .btn-login:active { transform: translateY(0); }
+
+  .login-footer {
+    position: absolute;
+    bottom: 40px;
+    width: 100%;
+    text-align: center;
+    animation: fadeIn 1.5s ease-out 1s both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .login-logo-card {
+    width: 300px;
+    margin-top: -20px;
+    margin-bottom: -15px;
+    height: auto;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+    cursor: pointer;
+  }
+  .login-logo-card:hover {
+    transform: translateY(-8px) scale(1.03);
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5)) brightness(1.1);
+  }
+  .login-logo-small:hover { opacity: 1; transform: scale(1.05); }
+  .login-copyright {
+    font-size: 9px;
+    color: rgba(201, 168, 76, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    font-weight: 600;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-error { 
+    color: #ff4d4d; 
+    font-size: 11px; 
+    margin-top: 15px; 
+    display: none; 
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
 </style>
 </head>
 <body>
 <div id="login-gate">
+  <canvas id="dot-grid-canvas"></canvas>
   <div class="login-card">
-    <h2>Acesso Interno</h2>
-    <div class="login-field">
-      <label>Usuário</label>
-      <input type="text" id="login-user" placeholder="Usuário">
+    <div style="text-align: center; margin-bottom: 0;">
+      <img src="removed_bg.png" class="login-logo-card" id="login-logo-proc" alt="MDS Logo">
     </div>
-    <div class="login-field">
+    <div class="login-field" style="--delay: 0.4s">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="Digite seu usuário">
+    </div>
+    <div class="login-field" style="--delay: 0.5s">
       <label>Senha</label>
       <input type="password" id="login-pass" placeholder="••••••••">
     </div>
     <button class="btn-login" id="login-btn">Entrar</button>
     <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+    <div class="login-copyright" style="margin-top: 15px; opacity: 0.5;">@ 2026 MDS CRÉDITO IMOBILIÁRIO</div>
+  </div>
+
+  <div class="login-footer">
+    <!-- Logo removido daqui para focar no topo do card -->
   </div>
 </div>
 
@@ -1423,7 +1533,7 @@
         <!-- HEADER -->
       <div class="l-header">
         <div class="l-logo-area">
-          <img src="public/logo.jpeg" class="l-logo-img" alt="MDS Logo">
+          <img src="logo.jpeg" class="l-logo-img" alt="MDS Logo">
         </div>
         <div class="l-title">LAUDO DE ANÁLISE</div>
         <div class="l-header-right">
@@ -2400,8 +2510,122 @@ function inlineSVGs() {
   });
 }
 
-window.addEventListener('load', inlineSVGs);
+
+function cleanLogoBg(imgId) {
+  const img = document.getElementById(imgId);
+  if (!img || img.dataset.processed) return;
+  const process = () => {
+    if (img.dataset.processed || !img.naturalWidth) return;
+    try {
+      const c = document.createElement('canvas');
+      const ctx = c.getContext('2d');
+      c.width = img.naturalWidth;
+      c.height = img.naturalHeight;
+      ctx.drawImage(img, 0, 0);
+      const imgData = ctx.getImageData(0, 0, c.width, c.height);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const r = d[i], g = d[i+1], b = d[i+2];
+        const brightness = (r + g + b) / 3;
+        // Remove branco
+        if (brightness > 230) { d[i+3] = 0; continue; }
+        // Fundo navy: escuro E azul-dominante (b >= r). Remove.
+        // Sombra do ouro: escuro MAS vermelho-dominante (r > b). Preserva.
+        if (brightness < 60 && b >= r) { d[i+3] = 0; continue; }
+      }
+      ctx.putImageData(imgData, 0, 0);
+      img.dataset.processed = "true";
+      img.src = c.toDataURL();
+    } catch(e) { console.error(e); }
+  };
+  if (img.complete) process();
+  else img.onload = process;
+}
+
+window.addEventListener('load', () => {
+  inlineSVGs();
+  cleanLogoBg('login-logo-proc');
+});
 initCustomSelects();
+
+function initDotGrid() {
+  const canvas = document.getElementById('dot-grid-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let dots = [];
+  const spacing = 32;
+  const dotSize = 1.1;
+  const mouse = { x: -1000, y: -1000 };
+  let width, height;
+
+  function resize() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    createDots();
+  }
+
+  function createDots() {
+    dots = [];
+    for (let x = spacing / 2; x < width; x += spacing) {
+      for (let y = spacing / 2; y < height; y += spacing) {
+        dots.push({
+          cx: x, cy: y,
+          x: x, y: y,
+          vx: 0, vy: 0,
+          targetX: x, targetY: y
+        });
+      }
+    }
+  }
+
+  window.addEventListener('resize', resize);
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    
+    for (let i = 0; i < dots.length; i++) {
+      const dot = dots[i];
+      const dx = mouse.x - dot.cx;
+      const dy = mouse.y - dot.cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      
+      const maxDist = 150;
+      if (dist < maxDist) {
+        const force = (maxDist - dist) / maxDist;
+        const angle = Math.atan2(dy, dx);
+        dot.targetX = dot.cx - Math.cos(angle) * force * 30;
+        dot.targetY = dot.cy - Math.sin(angle) * force * 30;
+      } else {
+        dot.targetX = dot.cx;
+        dot.targetY = dot.cy;
+      }
+
+      // Physics
+      dot.vx += (dot.targetX - dot.x) * 0.1;
+      dot.vy += (dot.targetY - dot.y) * 0.1;
+      dot.vx *= 0.8;
+      dot.vy *= 0.8;
+      dot.x += dot.vx;
+      dot.y += dot.vy;
+
+      const alpha = dist < maxDist ? 0.4 + (1 - dist/maxDist) * 0.5 : 0.15;
+      ctx.fillStyle = `rgba(201, 168, 76, ${alpha})`;
+      ctx.beginPath();
+      ctx.arc(dot.x, dot.y, dotSize, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  resize();
+  animate();
+}
+
+initDotGrid();
 </script>
 </body>
 </html>
