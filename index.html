@@ -25,6 +25,7 @@
     background: #0a1018; 
     height: 100vh; 
     width: 100vw; 
+    overflow: hidden; 
   }
 
   /* SIDEBAR FORM */
@@ -1195,7 +1196,11 @@
 
   /* RESPONSIVE FIXES */
   @media (max-width: 768px) {
-    .app { flex-direction: column; }
+    .app { 
+      flex-direction: column; 
+      height: auto !important; 
+      overflow: visible !important;
+    }
     .sidebar { 
       width: 100% !important; 
       min-width: 100% !important; 
@@ -1203,12 +1208,14 @@
       position: relative !important; 
       border-right: none !important;
       border-bottom: 1px solid #263040;
+      overflow: visible !important;
     }
     .resizer { display: none; }
     .preview-area { 
       width: 100%; 
       padding: 20px 10px; 
-      overflow-x: auto; 
+      height: auto !important;
+      overflow: visible !important;
     }
     .preview-area {
       min-height: auto;
