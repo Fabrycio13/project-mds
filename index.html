@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gerador de Laudo - MDS Crédito Imobiliário</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha512-qZvrmS2ekKInH6C0XwR9G/z5GrtSms1QWEnf0v462mF8zW9m1tYh22d56w09f8U5c/vC98P6I9u5e5v594896w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr" integrity="sha256-vSIsUv7iK8x2uO1uW5G4uE0j0V6U5v4qMvO/Uo0W4I0=" crossorigin="anonymous"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js" integrity="sha256-5XvF6f7K/P0x9P9MvO/Uo0W4I0=" crossorigin="anonymous"></script>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { 
@@ -1574,15 +1574,15 @@
     <div class="section-label">Datas</div>
     <div class="section-content">
       <div class="row2">
-        <div class="field"><label>Data da Análise</label><input type="text" id="dataAnalise" placeholder="dd/mm/aaaa"></div>
-        <div class="field"><label>Validade</label><input type="text" id="dataValidade" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label>Data da Análise</label><input type="text" id="dataAnalise" autocomplete="off" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label>Validade</label><input type="text" id="dataValidade" autocomplete="off" placeholder="dd/mm/aaaa"></div>
       </div>
     </div>
 
     <div class="section-label">Empreendimento</div>
     <div class="section-content">
-      <div class="field"><label>Construtora / Parceiro</label><input type="text" id="construtora" placeholder="NOME DA CONSTRUTORA"></div>
-      <div class="field"><label>Empreendimento</label><input type="text" id="empreendimento" placeholder="NOME DO EMPREENDIMENTO"></div>
+      <div class="field"><label>Construtora / Parceiro</label><input type="text" id="construtora" autocomplete="off" placeholder="NOME DA CONSTRUTORA"></div>
+      <div class="field"><label>Empreendimento</label><input type="text" id="empreendimento" autocomplete="off" placeholder="NOME DO EMPREENDIMENTO"></div>
       <div class="row2">
         <div class="field"><label>Município do Imóvel</label>
           <select id="municipio">
@@ -1609,14 +1609,14 @@
 
     <div class="section-label">1º Proponente</div>
     <div class="section-content">
-      <div class="field"><label>Nome Completo</label><input type="text" id="p1nome" placeholder="NOME DO PROPONENTE"></div>
+      <div class="field"><label>Nome Completo</label><input type="text" id="p1nome" autocomplete="off" placeholder="NOME DO PROPONENTE"></div>
       <div class="row2">
         <div class="field"><label>Data de Nascimento</label><input type="text" id="p1nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
-        <div class="field"><label>CPF</label><input type="text" id="p1cpf" placeholder="000.000.000-00"></div>
+        <div class="field"><label>CPF</label><input type="text" id="p1cpf" autocomplete="off" placeholder="000.000.000-00"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Profissão</label><input type="text" id="p1prof" placeholder="PROFISSÃO"></div>
-        <div class="field"><label>Renda Comprovada</label><input type="text" id="p1renda" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Profissão</label><input type="text" id="p1prof" autocomplete="off" placeholder="PROFISSÃO"></div>
+        <div class="field"><label>Renda Comprovada</label><input type="text" id="p1renda" autocomplete="off" placeholder="R$ 0,00"></div>
       </div>
       <div class="row2">
         <div class="field"><label>Dependente</label><select id="p1dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
@@ -1637,14 +1637,14 @@
     </div>
     <div id="p2-fields" style="display: none;">
       <div class="section-content">
-        <div class="field"><label>Nome Completo</label><input type="text" id="p2nome" placeholder="NOME DO PROPONENTE (OPCIONAL)"></div>
+        <div class="field"><label>Nome Completo</label><input type="text" id="p2nome" autocomplete="off" placeholder="NOME DO PROPONENTE (OPCIONAL)"></div>
         <div class="row2">
           <div class="field"><label>Data de Nascimento</label><input type="text" id="p2nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
-          <div class="field"><label>CPF</label><input type="text" id="p2cpf" placeholder="000.000.000-00"></div>
+          <div class="field"><label>CPF</label><input type="text" id="p2cpf" autocomplete="off" placeholder="000.000.000-00"></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Profissão</label><input type="text" id="p2prof" placeholder="PROFISSÃO"></div>
-          <div class="field"><label>Renda Comprovada</label><input type="text" id="p2renda" placeholder="R$ 0,00"></div>
+          <div class="field"><label>Profissão</label><input type="text" id="p2prof" autocomplete="off" placeholder="PROFISSÃO"></div>
+          <div class="field"><label>Renda Comprovada</label><input type="text" id="p2renda" autocomplete="off" placeholder="R$ 0,00"></div>
         </div>
         <div class="row2">
           <div class="field"><label>Dependente</label><select id="p2dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
@@ -1659,20 +1659,20 @@
 
     <div class="section-label">Condições Aprovadas</div>
     <div class="section-content">
-      <div class="field"><label>Valor de Avaliação do Imóvel</label><input type="text" id="valorAval" placeholder="R$ 0,00"></div>
+      <div class="field"><label>Valor de Avaliação do Imóvel</label><input type="text" id="valorAval" autocomplete="off" placeholder="R$ 0,00"></div>
       <div class="row2">
-        <div class="field"><label>Valor do Financiamento</label><input type="text" id="valorFinanc" placeholder="R$ 0,00"></div>
-        <div class="field"><label>Subsídio Concedido</label><input type="text" id="subsidio" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Valor do Financiamento</label><input type="text" id="valorFinanc" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Subsídio Concedido</label><input type="text" id="subsidio" autocomplete="off" placeholder="R$ 0,00"></div>
       </div>
-      <div class="field"><label>FGTS Utilizado</label><input type="text" id="fgts" placeholder="R$ 0,00"></div>
+      <div class="field"><label>FGTS Utilizado</label><input type="text" id="fgts" autocomplete="off" placeholder="R$ 0,00"></div>
       <div class="field"><label>Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00" readonly></div>
       <div class="row2">
-        <div class="field"><label>Prazo (meses)</label><input type="text" id="prazo" placeholder="360 meses"></div>
+        <div class="field"><label>Prazo (meses)</label><input type="text" id="prazo" autocomplete="off" placeholder="360 meses"></div>
         <div class="field"><label>Tabela</label><select id="tabela"><option selected disabled value="">SELECIONE</option><option>PRICE</option><option>SAC</option></select></div>
       </div>
       <div class="row2">
-        <div class="field"><label>1ª Prestação</label><input type="text" id="prestacao" placeholder="R$ 0,00"></div>
-        <div class="field"><label>Parcela SIRIC</label><input type="text" id="siric" placeholder="R$ 0,00"></div>
+        <div class="field"><label>1ª Prestação</label><input type="text" id="prestacao" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label>Parcela SIRIC</label><input type="text" id="siric" autocomplete="off" placeholder="R$ 0,00"></div>
       </div>
       <div class="row2">
         <div class="field"><label>Enquadramento / Faixa</label>
@@ -1704,7 +1704,7 @@
       </div>
       <div class="row3">
         <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%" readonly></div>
-        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" placeholder="5,64%"></div>
+        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" autocomplete="off" placeholder="5,64%"></div>
         <div class="field"><label>Faixa MCMV</label>
           <select id="faixaMCMV">
             <option selected disabled value="">SELECIONE</option>
@@ -1725,7 +1725,7 @@
 
     <div class="section-label">Analista</div>
     <div class="section-content">
-      <div class="field"><label>Nome do Analista</label><input type="text" id="cargo" placeholder="NOME DO ANALISTA"></div>
+      <div class="field"><label>Nome do Analista</label><input type="text" id="cargo" autocomplete="off" placeholder="NOME DO ANALISTA"></div>
     </div>
 
     <button class="btn-generate" onclick="gerarPDF()">
@@ -2277,7 +2277,18 @@ function bindRenda() {
     const parts = val.split(' ');
     const symbol = parts[0] || 'R$';
     const value = parts.slice(1).join(' ') || '0,00';
-    prev.innerHTML = `<span class="symbol">${symbol}</span> <span class="value">${value}</span>`;
+    prev.textContent = '';
+    const symbolSpan = document.createElement('span');
+    symbolSpan.className = 'symbol';
+    symbolSpan.textContent = symbol;
+    
+    const valueSpan = document.createElement('span');
+    valueSpan.className = 'value';
+    valueSpan.textContent = value;
+    
+    prev.appendChild(symbolSpan);
+    prev.appendChild(document.createTextNode(' '));
+    prev.appendChild(valueSpan);
   };
 
   p1.addEventListener('input', updateAll);
