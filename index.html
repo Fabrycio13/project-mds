@@ -1624,6 +1624,7 @@
         <div class="field"><label for="p1dependente">Dependente</label><select id="p1dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
         <div class="field"><label for="p1cotista">Cotista</label><select id="p1cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
       </div>
+      <div class="field" id="p1tipoDepField" style="display:none;"><label for="p1tipoDep">Tipo de Dependente</label><select id="p1tipoDep"><option selected disabled value="">SELECIONE</option><option>Pais</option><option>Filho (a)</option><option>Avô (a)</option><option>Irmão (a)</option><option>Tio (a)</option><option>Sobrinho (a)</option></select></div>
       <div class="row2">
         <div class="field"><label for="p1tipoRenda">Tipo de Renda</label><select id="p1tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
         <div class="field"><label for="p1irpf">Declara IRPF</label><select id="p1irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
@@ -1656,6 +1657,7 @@
           <div class="field"><label for="p2dependente">Dependente</label><select id="p2dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
           <div class="field"><label for="p2cotista">Cotista</label><select id="p2cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
         </div>
+        <div class="field" id="p2tipoDepField" style="display:none;"><label for="p2tipoDep">Tipo de Dependente</label><select id="p2tipoDep"><option selected disabled value="">SELECIONE</option><option>Pais</option><option>Filho (a)</option><option>Avô (a)</option><option>Irmão (a)</option><option>Tio (a)</option><option>Sobrinho (a)</option></select></div>
         <div class="row2">
           <div class="field"><label for="p2tipoRenda">Tipo de Renda</label><select id="p2tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
         <div class="field"><label for="p2irpf">Declara IRPF</label><select id="p2irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
@@ -1990,14 +1992,22 @@
             <div class="l-renda-sub-title">1º PROPONENTE</div>
             <div class="l-renda-row">
               <div class="l-renda-cell"><div class="lbl">DEPENDENTE</div><div class="val" id="v-p1dependente">-</div></div>
+              <div class="l-renda-cell"><div class="lbl">TIPO DEP.</div><div class="val" id="v-p1tipoDep">-</div></div>
+            </div>
+            <div class="l-renda-row">
               <div class="l-renda-cell"><div class="lbl">COTISTA</div><div class="val" id="v-p1cotista">-</div></div>
+              <div class="l-renda-cell"><div class="lbl">FGTS</div><div class="val" id="v-p1fgtsRenda">-</div></div>
             </div>
 
             <div id="v-renda-p2-info" style="display: none;">
               <div class="l-renda-sub-title">2º PROPONENTE</div>
               <div class="l-renda-row">
                 <div class="l-renda-cell"><div class="lbl">DEPENDENTE</div><div class="val" id="v-p2dependente">-</div></div>
+                <div class="l-renda-cell"><div class="lbl">TIPO DEP.</div><div class="val" id="v-p2tipoDep">-</div></div>
+              </div>
+              <div class="l-renda-row">
                 <div class="l-renda-cell"><div class="lbl">COTISTA</div><div class="val" id="v-p2cotista">-</div></div>
+                <div class="l-renda-cell"><div class="lbl">FGTS</div><div class="val" id="v-p2fgtsRenda">-</div></div>
               </div>
             </div>
 
@@ -2408,13 +2418,31 @@ function calculateCotaSiric() {
 }
 
 // Update Proponent Preview Selects
-['p1tipoRenda', 'p2tipoRenda', 'p1irpf', 'p2irpf', 'p1dependente', 'p1cotista', 'p2dependente', 'p2cotista', 'p1fgts', 'p2fgts'].forEach(id => {
+['p1tipoRenda', 'p2tipoRenda', 'p1irpf', 'p2irpf', 'p1dependente', 'p1cotista', 'p2dependente', 'p2cotista', 'p1fgts', 'p2fgts', 'p1tipoDep', 'p2tipoDep'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('change', () => {
       const val = el.value;
       const vEl = document.getElementById('v-' + id);
       if (vEl) vEl.textContent = val;
+      const vElRenda = document.getElementById('v-' + id + 'Renda');
+      if (vElRenda) vElRenda.textContent = val;
+    });
+  }
+});
+
+// Toggle Tipo de Dependente visibility
+['p1dependente', 'p2dependente'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) {
+    el.addEventListener('change', () => {
+      const fieldId = id.replace('dependente', 'tipoDepField');
+      const field = document.getElementById(fieldId);
+      const sel = document.getElementById(id.replace('dependente', 'tipoDep'));
+      const isSim = el.value === 'SIM';
+      if (field) field.style.display = isSim ? '' : 'none';
+      if (sel) sel.required = isSim;
+      if (!isSim && sel) { sel.value = ''; sel.dispatchEvent(new Event('change')); }
     });
   }
 });
@@ -2712,6 +2740,14 @@ function initCustomSelects() {
       else if (txt === 'PRONTO') bColor = '#2196f3';
       else if (txt === 'USADO') bColor = '#fd7e14';
       else if (txt === 'REFORMA') bColor = '#673ab7';
+      
+      // Tipo de Dependente
+      else if (txt === 'PAIS') bColor = '#e91e63';
+      else if (txt === 'FILHO (A)') bColor = '#2196f3';
+      else if (txt === 'AVÔ (A)' || txt === 'AVO (A)') bColor = '#9c27b0';
+      else if (txt === 'IRMÃO (A)' || txt === 'IRMAO (A)') bColor = '#ff9800';
+      else if (txt === 'TIO (A)') bColor = '#4caf50';
+      else if (txt === 'SOBRINHO (A)') bColor = '#00bcd4';
       
       // Municipalities colors
       else if (txt === 'NOVA IGUAÇU') bColor = '#007bff';
