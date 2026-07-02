@@ -1730,6 +1730,10 @@
 
     <div class="section-label">Observações</div>
     <div class="section-content">
+      <div class="row2">
+        <div class="field"><label for="consultaRestricao">Consulta Restrição</label><select id="consultaRestricao"><option selected disabled value="">SELECIONE</option><option>CONSTA</option><option>CONSTA APONTAMENTO</option></select></div>
+        <div class="field"><label for="possuiImovel">Possui Imóvel</label><select id="possuiImovel"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+      </div>
       <div class="field">
         <label for="obsVenda">Observações de Venda</label>
         <textarea id="obsVenda" placeholder="Digite observações relevantes aqui..." style="width: 100%; height: 100px; background: #0f1923; border: 1px solid #263040; color: #fff; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 11px; resize: vertical;"></textarea>
@@ -2083,6 +2087,12 @@
         <!-- OBSERVAÇÕES -->
         <div class="l-obs">
           <div class="l-section-header"><img src="Icones/clip.svg" class="l-header-icon"> OBSERVAÇÕES / INFORMAÇÕES SETOR DE VENDAS</div>
+          <div class="l-obs-content" style="margin-bottom:8px;">
+            <div style="display:flex; gap: 20px; flex-wrap: wrap;">
+              <div class="l-obs-item" style="margin:0;"><span class="l-obs-lbl">Consulta Restrição:</span><span class="l-obs-val" id="v-consultaRestricao">-</span></div>
+              <div class="l-obs-item" style="margin:0;"><span class="l-obs-lbl">Possui Imóvel:</span><span class="l-obs-val" id="v-possuiImovel">-</span></div>
+            </div>
+          </div>
           <div class="l-obs-content">
             <img src="Icones/search-alt.svg" class="l-obs-icon-gray">
             <div class="l-obs-body" id="v-obsVenda">Nenhuma observação registrada.</div>
@@ -2233,6 +2243,8 @@ const bindings = [
   ['enquadramento','v-enquadramento'], ['indexador','v-indexador'],
   ['cargo','v-cargo'], ['creci','v-creci'],
   ['obsVenda','v-obsVenda', (v) => v.trim() || 'Nenhuma observação registrada.'],
+  ['consultaRestricao','v-consultaRestricao'],
+  ['possuiImovel','v-possuiImovel'],
 ];
 bindings.forEach(([a, b, c]) => bind(a, b, c));
 bindRenda();
@@ -2749,6 +2761,10 @@ function initCustomSelects() {
       else if (txt === 'IRMÃO (A)' || txt === 'IRMAO (A)') bColor = '#ff9800';
       else if (txt === 'TIO (A)') bColor = '#4caf50';
       else if (txt === 'SOBRINHO (A)') bColor = '#00bcd4';
+      
+      // Consulta Restrição
+      else if (txt === 'CONSTA') bColor = '#f44336';
+      else if (txt === 'CONSTA APONTAMENTO') bColor = '#ff9800';
       
       // Municipalities colors
       else if (txt === 'NOVA IGUAÇU') bColor = '#007bff';
