@@ -1731,7 +1731,7 @@
     <div class="section-label">Observações</div>
     <div class="section-content">
       <div class="row2">
-        <div class="field"><label for="consultaRestricao">Consulta Restrição</label><select id="consultaRestricao"><option selected disabled value="">SELECIONE</option><option>CONSTA</option><option>CONSTA APONTAMENTO</option></select></div>
+        <div class="field"><label for="consultaRestricao">Consulta Restrição</label><select id="consultaRestricao"><option selected disabled value="">SELECIONE</option><option>NADA CONSTA</option><option>CONSTA APONTAMENTO</option></select></div>
         <div class="field"><label for="possuiImovel">Possui Imóvel</label><select id="possuiImovel"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
       </div>
       <div class="field">
@@ -2763,7 +2763,7 @@ function initCustomSelects() {
       else if (txt === 'SOBRINHO (A)') bColor = '#00bcd4';
       
       // Consulta Restrição
-      else if (txt === 'CONSTA') bColor = '#f44336';
+      else if (txt === 'NADA CONSTA') bColor = '#4caf50';
       else if (txt === 'CONSTA APONTAMENTO') bColor = '#ff9800';
       
       // Municipalities colors
