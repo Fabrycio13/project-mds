@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr" crossorigin="anonymous"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/pt.js" crossorigin="anonymous"></script>
+
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { 
@@ -1104,7 +1104,8 @@
     border: 1px solid #263040 !important;
     border-radius: 16px !important;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6) !important;
-    width: 280px !important;
+    width: auto !important;
+    min-width: 260px !important;
     padding: 12px !important;
     font-family: inherit !important;
   }
@@ -1190,7 +1191,7 @@
     color: #9ca3af !important;
     border-radius: 10px !important;
     height: 34px !important;
-    max-width: 34px !important;
+    width: 34px !important;
     line-height: 34px !important;
     margin: 1px !important;
     border: none !important;
@@ -1499,11 +1500,11 @@
       <img src="removed_bg.png" class="login-logo-card" id="login-logo-proc" alt="MDS Logo">
     </div>
     <div class="login-field" style="--delay: 0.4s">
-      <label>Usuário</label>
+      <label for="login-user">Usuário</label>
       <input type="text" id="login-user" placeholder="Digite seu usuário">
     </div>
     <div class="login-field" style="--delay: 0.5s">
-      <label>Senha</label>
+      <label for="login-pass">Senha</label>
       <input type="password" id="login-pass" placeholder="••••••••">
     </div>
     <button class="btn-login" id="login-btn">
@@ -1575,17 +1576,17 @@
     <div class="section-label">Datas</div>
     <div class="section-content">
       <div class="row2">
-        <div class="field"><label>Data da Análise</label><input type="text" id="dataAnalise" autocomplete="off" placeholder="dd/mm/aaaa"></div>
-        <div class="field"><label>Validade</label><input type="text" id="dataValidade" autocomplete="off" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label for="dataAnalise">Data da Análise</label><input type="text" id="dataAnalise" autocomplete="off" placeholder="dd/mm/aaaa"></div>
+        <div class="field"><label for="dataValidade">Validade</label><input type="text" id="dataValidade" autocomplete="off" placeholder="dd/mm/aaaa"></div>
       </div>
     </div>
 
     <div class="section-label">Empreendimento</div>
     <div class="section-content">
-      <div class="field"><label>Construtora / Parceiro</label><input type="text" id="construtora" autocomplete="off" placeholder="NOME DA CONSTRUTORA"></div>
-      <div class="field"><label>Empreendimento</label><input type="text" id="empreendimento" autocomplete="off" placeholder="NOME DO EMPREENDIMENTO"></div>
+      <div class="field"><label for="construtora">Construtora / Parceiro</label><input type="text" id="construtora" autocomplete="off" placeholder="NOME DA CONSTRUTORA"></div>
+      <div class="field"><label for="empreendimento">Empreendimento</label><input type="text" id="empreendimento" autocomplete="off" placeholder="NOME DO EMPREENDIMENTO"></div>
       <div class="row2">
-        <div class="field"><label>Município do Imóvel</label>
+        <div class="field"><label for="municipio">Município do Imóvel</label>
           <select id="municipio">
             <option>NOVA IGUAÇU</option>
             <option>NILÓPOLIS</option>
@@ -1599,7 +1600,7 @@
             <option selected>SEM INFORMAÇÕES</option>
           </select>
         </div>
-        <div class="field"><label>Modalidade</label>
+        <div class="field"><label for="modalidade">Modalidade</label>
           <select id="modalidade">
             <option selected disabled value="">SELECIONE</option>
             <option>PLANTA</option><option>PRONTO</option><option>USADO</option><option>REFORMA</option>
@@ -1610,22 +1611,26 @@
 
     <div class="section-label">1º Proponente</div>
     <div class="section-content">
-      <div class="field"><label>Nome Completo</label><input type="text" id="p1nome" autocomplete="off" placeholder="NOME DO PROPONENTE"></div>
+      <div class="field"><label for="p1nome">Nome Completo</label><input type="text" id="p1nome" autocomplete="off" placeholder="NOME DO PROPONENTE"></div>
       <div class="row2">
-        <div class="field"><label>Data de Nascimento</label><input type="text" id="p1nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
-        <div class="field"><label>CPF</label><input type="text" id="p1cpf" autocomplete="off" placeholder="000.000.000-00"></div>
+        <div class="field"><label for="p1nasc">Data de Nascimento</label><input type="text" id="p1nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
+        <div class="field"><label for="p1cpf">CPF</label><input type="text" id="p1cpf" autocomplete="off" placeholder="000.000.000-00"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Profissão</label><input type="text" id="p1prof" autocomplete="off" placeholder="PROFISSÃO"></div>
-        <div class="field"><label>Renda Comprovada</label><input type="text" id="p1renda" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label for="p1prof">Profissão</label><input type="text" id="p1prof" autocomplete="off" placeholder="PROFISSÃO"></div>
+        <div class="field"><label for="p1renda">Renda Comprovada</label><input type="text" id="p1renda" autocomplete="off" placeholder="R$ 0,00"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Dependente</label><select id="p1dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
-        <div class="field"><label>Cotista</label><select id="p1cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"><label for="p1dependente">Dependente</label><select id="p1dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"><label for="p1cotista">Cotista</label><select id="p1cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Tipo de Renda</label><select id="p1tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
-        <div class="field"><label>Declara IRPF</label><select id="p1irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"><label for="p1tipoRenda">Tipo de Renda</label><select id="p1tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
+        <div class="field"><label for="p1irpf">Declara IRPF</label><select id="p1irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="p1fgts">Utilizando FGTS</label><select id="p1fgts"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"></div>
       </div>
     </div>
 
@@ -1638,45 +1643,49 @@
     </div>
     <div id="p2-fields" style="display: none;">
       <div class="section-content">
-        <div class="field"><label>Nome Completo</label><input type="text" id="p2nome" autocomplete="off" placeholder="NOME DO PROPONENTE (OPCIONAL)"></div>
+        <div class="field"><label for="p2nome">Nome Completo</label><input type="text" id="p2nome" autocomplete="off" placeholder="NOME DO PROPONENTE (OPCIONAL)"></div>
         <div class="row2">
-          <div class="field"><label>Data de Nascimento</label><input type="text" id="p2nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
-          <div class="field"><label>CPF</label><input type="text" id="p2cpf" autocomplete="off" placeholder="000.000.000-00"></div>
+          <div class="field"><label for="p2nasc">Data de Nascimento</label><input type="text" id="p2nasc" placeholder="DD/MM/AAAA" maxlength="10" autocomplete="off" inputmode="numeric"></div>
+          <div class="field"><label for="p2cpf">CPF</label><input type="text" id="p2cpf" autocomplete="off" placeholder="000.000.000-00"></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Profissão</label><input type="text" id="p2prof" autocomplete="off" placeholder="PROFISSÃO"></div>
-          <div class="field"><label>Renda Comprovada</label><input type="text" id="p2renda" autocomplete="off" placeholder="R$ 0,00"></div>
+          <div class="field"><label for="p2prof">Profissão</label><input type="text" id="p2prof" autocomplete="off" placeholder="PROFISSÃO"></div>
+          <div class="field"><label for="p2renda">Renda Comprovada</label><input type="text" id="p2renda" autocomplete="off" placeholder="R$ 0,00"></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Dependente</label><select id="p2dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
-          <div class="field"><label>Cotista</label><select id="p2cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+          <div class="field"><label for="p2dependente">Dependente</label><select id="p2dependente"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+          <div class="field"><label for="p2cotista">Cotista</label><select id="p2cotista"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
         </div>
         <div class="row2">
-          <div class="field"><label>Tipo de Renda</label><select id="p2tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
-          <div class="field"><label>Declara IRPF</label><select id="p2irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
-        </div>
+          <div class="field"><label for="p2tipoRenda">Tipo de Renda</label><select id="p2tipoRenda"><option selected disabled value="">SELECIONE</option><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
+        <div class="field"><label for="p2irpf">Declara IRPF</label><select id="p2irpf"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="p2fgts">Utilizando FGTS</label><select id="p2fgts"><option selected disabled value="">SELECIONE</option><option>SIM</option><option>NÃO</option></select></div>
+        <div class="field"></div>
+      </div>
       </div>
     </div>
 
     <div class="section-label">Condições Aprovadas</div>
     <div class="section-content">
-      <div class="field"><label>Valor de Avaliação do Imóvel</label><input type="text" id="valorAval" autocomplete="off" placeholder="R$ 0,00"></div>
+      <div class="field"><label for="valorAval">Valor de Avaliação do Imóvel</label><input type="text" id="valorAval" autocomplete="off" placeholder="R$ 0,00"></div>
       <div class="row2">
-        <div class="field"><label>Valor do Financiamento</label><input type="text" id="valorFinanc" autocomplete="off" placeholder="R$ 0,00"></div>
-        <div class="field"><label>Subsídio Concedido</label><input type="text" id="subsidio" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label for="valorFinanc">Valor do Financiamento</label><input type="text" id="valorFinanc" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label for="subsidio">Subsídio Concedido</label><input type="text" id="subsidio" autocomplete="off" placeholder="R$ 0,00"></div>
       </div>
-      <div class="field"><label>FGTS Utilizado</label><input type="text" id="fgts" autocomplete="off" placeholder="R$ 0,00"></div>
-      <div class="field"><label>Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00" readonly></div>
+      <div class="field"><label for="fgts">FGTS Utilizado</label><input type="text" id="fgts" autocomplete="off" placeholder="R$ 0,00"></div>
+      <div class="field"><label for="totalValores">Total dos Valores</label><input type="text" id="totalValores" placeholder="R$ 0,00" readonly></div>
       <div class="row2">
-        <div class="field"><label>Prazo (meses)</label><input type="text" id="prazo" autocomplete="off" placeholder="360 meses"></div>
-        <div class="field"><label>Tabela</label><select id="tabela"><option selected disabled value="">SELECIONE</option><option>PRICE</option><option>SAC</option></select></div>
-      </div>
-      <div class="row2">
-        <div class="field"><label>1ª Prestação</label><input type="text" id="prestacao" autocomplete="off" placeholder="R$ 0,00"></div>
-        <div class="field"><label>Parcela SIRIC</label><input type="text" id="siric" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label for="prazo">Prazo (meses)</label><input type="text" id="prazo" autocomplete="off" placeholder="360 meses"></div>
+        <div class="field"><label for="tabela">Tabela</label><select id="tabela"><option selected disabled value="">SELECIONE</option><option>PRICE</option><option>SAC</option></select></div>
       </div>
       <div class="row2">
-        <div class="field"><label>Enquadramento / Faixa</label>
+        <div class="field"><label for="prestacao">1ª Prestação</label><input type="text" id="prestacao" autocomplete="off" placeholder="R$ 0,00"></div>
+        <div class="field"><label for="siric">Parcela SIRIC</label><input type="text" id="siric" autocomplete="off" placeholder="R$ 0,00"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label for="enquadramento">Enquadramento / Faixa</label>
           <select id="enquadramento">
             <option selected disabled value="">SELECIONE</option>
             <option>Faixa 1 - (Renda até 3.200,00)</option>
@@ -1687,13 +1696,13 @@
             <option>PRO COTISTA</option>
           </select>
         </div>
-        <div class="field"><label>Cota SIRIC (%)</label><input type="text" id="cotaSiric" readonly placeholder="0%"></div>
+        <div class="field"><label for="cotaSiric">Cota SIRIC (%)</label><input type="text" id="cotaSiric" readonly placeholder="0%"></div>
       </div>
     </div>
 
     <div class="section-label">Resultado</div>
     <div class="section-content">
-      <div class="field"><label>Resultado da Análise</label>
+      <div class="field"><label for="statusAnalise">Resultado da Análise</label>
         <select id="statusAnalise" onchange="updateStatus()">
           <option selected disabled value="">SELECIONE</option>
           <option value="aprovado">APROVADO</option>
@@ -1704,29 +1713,29 @@
         </select>
       </div>
       <div class="row3">
-        <div class="field"><label>Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%" readonly></div>
-        <div class="field"><label>Juros (a.a.)</label><input type="text" id="juros" autocomplete="off" placeholder="5,64%"></div>
-        <div class="field"><label>Faixa MCMV</label>
+        <div class="field"><label for="cota">Cota Financ. (%)</label><input type="text" id="cota" placeholder="80%" readonly></div>
+        <div class="field"><label for="juros">Juros (a.a.)</label><input type="text" id="juros" autocomplete="off" placeholder="5,64%"></div>
+        <div class="field"><label for="faixaMCMV">Faixa MCMV</label>
           <select id="faixaMCMV">
             <option selected disabled value="">SELECIONE</option>
             <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
           </select>
         </div>
       </div>
-      <div class="field"><label>Renda Total Apurada</label><input type="text" id="rendaTotal" placeholder="R$ 0,00" readonly></div>
+      <div class="field"><label for="rendaTotal">Renda Total Apurada</label><input type="text" id="rendaTotal" placeholder="R$ 0,00" readonly></div>
     </div>
 
     <div class="section-label">Observações</div>
     <div class="section-content">
       <div class="field">
-        <label>Observações de Venda</label>
+        <label for="obsVenda">Observações de Venda</label>
         <textarea id="obsVenda" placeholder="Digite observações relevantes aqui..." style="width: 100%; height: 100px; background: #0f1923; border: 1px solid #263040; color: #fff; padding: 10px; border-radius: 4px; font-family: inherit; font-size: 11px; resize: vertical;"></textarea>
       </div>
     </div>
 
     <div class="section-label">Analista</div>
     <div class="section-content">
-      <div class="field"><label>Nome do Analista</label><input type="text" id="cargo" autocomplete="off" placeholder="NOME DO ANALISTA"></div>
+      <div class="field"><label for="cargo">Nome do Analista</label><input type="text" id="cargo" autocomplete="off" placeholder="NOME DO ANALISTA"></div>
     </div>
 
     <button class="btn-generate" onclick="gerarPDF()">
@@ -1917,6 +1926,11 @@
                     <div class="l-field-lbl">IRPF</div>
                     <div class="l-field-val" id="v-p1irpf">-</div>
                   </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">FGTS</div>
+                    <div class="l-field-val" id="v-p1fgts">-</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1957,6 +1971,11 @@
                   <div class="l-field-inner">
                     <div class="l-field-lbl">IRPF</div>
                     <div class="l-field-val" id="v-p2irpf">-</div>
+                  </div>
+                  <div class="l-sep"></div>
+                  <div class="l-field-inner">
+                    <div class="l-field-lbl">FGTS</div>
+                    <div class="l-field-val" id="v-p2fgts">-</div>
                   </div>
                 </div>
               </div>
@@ -2124,13 +2143,20 @@ function updateStatus() {
   desc.textContent = c.desc;
 }
 
+// ponytail: inline pt locale object, avoids CORS-blocked npmcdn.com
+const localePt = {
+  weekdays: { shorthand: ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'], longhand: ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'] },
+  months: { shorthand: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'], longhand: ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'] },
+  firstDayOfWeek: 1, rangeSeparator: ' até ', ordinal: function() { return 'º'; }
+};
+
 // Init dates with Flatpickr
 const today = new Date();
 const nextMonth = new Date();
 nextMonth.setMonth(nextMonth.getMonth() + 1);
 
 const fpConfig = {
-  locale: "pt",
+  locale: localePt,
   dateFormat: "d/m/Y",
   disableMobile: "true",
   monthSelectorType: "static",
@@ -2382,7 +2408,7 @@ function calculateCotaSiric() {
 }
 
 // Update Proponent Preview Selects
-['p1tipoRenda', 'p2tipoRenda', 'p1irpf', 'p2irpf', 'p1dependente', 'p1cotista', 'p2dependente', 'p2cotista'].forEach(id => {
+['p1tipoRenda', 'p2tipoRenda', 'p1irpf', 'p2irpf', 'p1dependente', 'p1cotista', 'p2dependente', 'p2cotista', 'p1fgts', 'p2fgts'].forEach(id => {
   const el = document.getElementById(id);
   if (el) {
     el.addEventListener('change', () => {
@@ -2413,10 +2439,10 @@ hasP2.addEventListener('change', (e) => {
 
 // Dynamic MCMV Range
 const mcmvRanges = {
-  'FAIXA 1': 'Até R$ 2.640,00',
+  'FAIXA 1': 'Renda até 3.200,00',
   'FAIXA 2': 'Renda de 3.200,01 a 5.000,00',
-  'FAIXA 3': 'Renda de 4.400,01 a 8.000,00',
-  'FAIXA 4': 'Renda acima de R$ 8.000,00'
+  'FAIXA 3': 'Renda de 5.000,01 a 9.600,00',
+  'FAIXA 4': 'Renda de 9.600,01 a 13.000,00'
 };
 document.getElementById('faixaMCMV').addEventListener('change', (e) => {
   const val = e.target.value;
