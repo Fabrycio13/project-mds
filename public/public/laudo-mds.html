@@ -1038,7 +1038,7 @@
         <div class="field"><label>Faixa MCMV</label>
           <select id="faixaMCMV">
             <option selected disabled value="">SELECIONE</option>
-            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
+            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option><option>SBPE</option>
           </select>
         </div>
       </div>
@@ -1409,7 +1409,7 @@
         <div class="l-parecer">
           <img src="Icones/route-interstate.svg" class="l-parecer-icon-subtle">
           <div class="l-parecer-text">
-            Cliente enquadrado na <b id="v-faixa2">Faixa 2</b> do Programa Minha Casa Minha Vida, com comprometimento dentro dos limites estabelecidos pela política de crédito (30%). Operação viável, com <b>subsídio aplicado</b> e <b>financiamento de <span id="v-cota2">80%</span></b> do valor do imóvel. Documentação conforme e análise de crédito aprovada.
+            Cliente enquadrado na <b id="v-faixa2">Faixa 2</b> <span id="v-enquadramento-programa">do Programa Minha Casa Minha Vida</span>, com comprometimento dentro dos limites estabelecidos pela política de crédito (<span id="v-comprometimento">30%</span>). Operação viável, com <b>subsídio aplicado</b> e <b>financiamento <span id="v-cota2">80%</span></b> do valor do imóvel. Documentação conforme e análise de crédito aprovada.
           </div>
         </div>
 
@@ -1677,11 +1677,21 @@ document.getElementById('faixaMCMV').addEventListener('change', (e) => {
 });
 
 // Enquadramento Sync with Parecer
-document.getElementById('enquadramento').addEventListener('change', (e) => {
-  const val = e.target.value;
+function syncEnquadramentoParecer(val = document.getElementById('enquadramento').value) {
   const match = val.match(/Faixa \d/i);
   const faixaText = match ? match[0] : val;
   document.getElementById('v-faixa2').textContent = faixaText;
+  document.getElementById('v-enquadramento-programa').textContent =
+    val === 'SBPE' ? 'do Sistema Brasileiro de Poupança e Empréstimo (SBPE)' : 'do Programa Minha Casa Minha Vida';
+  const tabela = document.getElementById('tabela').value;
+  document.getElementById('v-comprometimento').textContent = val === 'SBPE' && tabela === 'PRICE' ? '25%' : '30%';
+}
+
+document.getElementById('enquadramento').addEventListener('change', (e) => {
+  syncEnquadramentoParecer(e.target.value);
+});
+document.getElementById('tabela').addEventListener('change', () => {
+  syncEnquadramentoParecer();
 });
 
 // Cota Financ. Masking

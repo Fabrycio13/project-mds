@@ -1721,7 +1721,7 @@
         <div class="field"><label for="faixaMCMV">Faixa MCMV</label>
           <select id="faixaMCMV">
             <option selected disabled value="">SELECIONE</option>
-            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option>
+            <option>FAIXA 1</option><option>FAIXA 2</option><option>FAIXA 3</option><option>FAIXA 4</option><option>SBPE</option>
           </select>
         </div>
       </div>
@@ -2080,7 +2080,7 @@
             <svg viewBox="0 0 24 24" width="36" height="36" fill="#c9a84c" style="overflow: visible;"><path d="M18.55,2l-1.35,.011c-1.309,0-1.918-.431-2.69-.977-.319-.226-.639-.449-.995-.646C13.039,.127,12.519,0,12,.003c-.519-.003-1.039,.125-1.515,.385-.356,.196-.676,.42-.995,.646-.772,.546-1.382,.977-2.69,.977l-1.35-.011c-1.999,0-3.45,1.354-3.45,3.22v7.178c0,5.5,5.033,9.286,7.947,11.001,.491,.295,1,.601,2.053,.601,1.053,0,1.562-.306,2.053-.601,2.914-1.715,7.947-5.5,7.947-11.001V5.22c0-1.866-1.451-3.22-3.45-3.22Zm1.45,10.397c0,4.506-4.434,7.789-6.979,9.287-.38,.229-.523,.315-1.021,.315-.498,0-.641-.086-1.021-.315-2.545-1.498-6.979-4.781-6.979-9.287v-2.393H20v2.393Zm0-4.393H4v-2.785c0-1.132,1.11-1.22,1.45-1.22l1.35,.011c1.944,0,2.998-.745,3.845-1.344,.259-.183,.517-.368,.806-.527,.174-.096,.362-.141,.55-.138,.188-.003,.376,.042,.55,.138,.289,.159,.547,.344,.806,.527,.847,.599,1.9,1.344,3.845,1.344l1.35-.011c.34,0,1.45,.088,1.45,1.22v2.785Z"/></svg>
           </div>
           <div class="l-parecer-text">
-            Cliente enquadrado na <b id="v-faixa2">Faixa 2</b> do Programa Minha Casa Minha Vida, com comprometimento dentro dos limites estabelecidos pela política de crédito (30%). Operação viável, com <b>subsídio aplicado</b> e <b>financiamento de <span id="v-cota2">80%</span></b> do valor do imóvel. Documentação conforme e análise de crédito aprovada.
+            Cliente enquadrado na <b id="v-faixa2">Faixa 2</b> <span id="v-enquadramento-programa">do Programa Minha Casa Minha Vida</span>, com comprometimento dentro dos limites estabelecidos pela política de crédito (<span id="v-comprometimento">30%</span>). Operação viável, com <b>subsídio aplicado</b> e <b>financiamento <span id="v-cota2">80%</span></b> do valor do imóvel. Documentação conforme e análise de crédito aprovada.
           </div>
         </div>
 
@@ -2494,11 +2494,21 @@ document.getElementById('faixaMCMV').addEventListener('change', (e) => {
 });
 
 // Enquadramento Sync with Parecer
-document.getElementById('enquadramento').addEventListener('change', (e) => {
-  const val = e.target.value;
+function syncEnquadramentoParecer(val = document.getElementById('enquadramento').value) {
   const match = val.match(/Faixa \d/i);
   const faixaText = match ? match[0] : val;
   document.getElementById('v-faixa2').textContent = faixaText;
+  document.getElementById('v-enquadramento-programa').textContent =
+    val === 'SBPE' ? 'do Sistema Brasileiro de Poupança e Empréstimo (SBPE)' : 'do Programa Minha Casa Minha Vida';
+  const tabela = document.getElementById('tabela').value;
+  document.getElementById('v-comprometimento').textContent = val === 'SBPE' && tabela === 'PRICE' ? '25%' : '30%';
+}
+
+document.getElementById('enquadramento').addEventListener('change', (e) => {
+  syncEnquadramentoParecer(e.target.value);
+});
+document.getElementById('tabela').addEventListener('change', () => {
+  syncEnquadramentoParecer();
 });
 
 // Cota calculations are now automatic in bindCondicoes
