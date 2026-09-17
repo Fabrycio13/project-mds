@@ -1,0 +1,452 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Demonstração do Gerador de Laudo da LumeHabita Crédito Imobiliário.">
+  <title>Demo · Gerador de Laudo LumeHabita</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='12' fill='%230d2137'/><text x='32' y='42' text-anchor='middle' font-family='Arial' font-size='22' font-weight='900' fill='%23d4af37'>LH</text></svg>">
+  <style>
+    :root {
+      --navy: #0d2137;
+      --navy-deep: #0a1018;
+      --sidebar: #161f2a;
+      --field: #0f1923;
+      --line: #263040;
+      --gold: #c9a84c;
+      --gold-light: #e8c96d;
+      --text: #e0e0e0;
+      --muted: #7a9ab5;
+      --green: #4caf50;
+      --orange: #ff9800;
+      --red: #f44336;
+      --blue: #03a9f4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { min-width: 320px; min-height: 100%; }
+    body { overflow: hidden; color: var(--text); background: #0f1923; font-family: "Segoe UI", Arial, sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    ::selection { color: #111; background: var(--gold-light); }
+    ::-webkit-scrollbar { width: 9px; height: 9px; }
+    ::-webkit-scrollbar-track { background: #0f1923; }
+    ::-webkit-scrollbar-thumb { border: 2px solid #0f1923; border-radius: 9px; background: var(--gold); }
+
+    .app { display: flex; width: 100vw; height: 100vh; overflow: hidden; background: var(--navy-deep); }
+    .sidebar { width: 37.5%; min-width: 350px; height: 100vh; overflow-y: auto; padding: 20px 17px; border-right: 1px solid var(--line); background: var(--sidebar); }
+    .sidebar-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-bottom: 13px; border-bottom: 1px solid var(--line); color: var(--gold); font-size: 14px; font-weight: 800; letter-spacing: 1.4px; text-transform: uppercase; }
+    .sidebar-title-main { display: flex; align-items: center; gap: 10px; }
+    .sidebar-title-main::before { content: ""; display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); box-shadow: 0 0 12px rgba(201,168,76,.55); }
+    .demo-chip { padding: 5px 8px; border: 1px solid rgba(201,168,76,.55); border-radius: 4px; color: var(--gold-light); font-size: 9px; letter-spacing: 1px; }
+    .btn-logout { display: inline-flex; align-items: center; gap: 6px; padding: 6px 13px; border: 2px solid #ff4d4d; border-radius: 999px; color: #ff4d4d; background: transparent; font-size: 10px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+    .btn-logout:hover { color: #fff; background: #ff4d4d; }
+    .sidebar-brand { display: flex; align-items: center; gap: 9px; margin: 16px 0 4px; color: #b9c9d7; font-size: 11px; letter-spacing: .5px; }
+    .sidebar-brand strong { color: #fff; }
+    .brand-mark { width: 25px; height: 25px; border-radius: 6px; background: var(--gold); }
+    .demo-note { margin: 0 0 13px 34px; color: #708aa1; font-size: 10px; line-height: 1.35; }
+    .sidebar-brand, .demo-note { display: none; }
+
+    .section-label { display: flex; align-items: center; gap: 8px; margin: 19px 0 9px; color: var(--gold); font-size: 11px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; cursor: pointer; user-select: none; }
+    .section-label::before { content: ""; width: 6px; height: 6px; border-right: 2px solid var(--gold); border-bottom: 2px solid var(--gold); transform: rotate(45deg); margin: 0 7px 3px 1px; transition: transform .2s; }
+    .section-label.collapsed::before { transform: rotate(-45deg); margin-bottom: -3px; }
+    .section-label::after { content: ""; height: 1px; flex: 1; background: var(--line); }
+    .section-content { max-height: 900px; overflow: visible; opacity: 1; transition: max-height .25s, opacity .2s; }
+    .section-label.collapsed + .section-content { max-height: 0; overflow: hidden; opacity: 0; pointer-events: none; }
+    .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .row3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+    .field { min-width: 0; margin-bottom: 9px; }
+    .field label { display: block; margin-bottom: 4px; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .45px; text-transform: uppercase; }
+    .field input, .field select, .field textarea { width: 100%; border: 1px solid var(--line); border-radius: 4px; outline: none; color: #fff; background: var(--field); transition: border-color .2s, box-shadow .2s; }
+    .field input, .field select { height: 34px; padding: 0 9px; font-size: 11px; }
+    .field textarea { min-height: 76px; padding: 9px; resize: vertical; font-size: 11px; line-height: 1.35; }
+    .field input::placeholder, .field textarea::placeholder { color: #58738a; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,.1); }
+    .field input[readonly] { color: var(--gold-light); background: rgba(201,168,76,.07); }
+    .field select { appearance: none; padding-right: 28px; background-image: linear-gradient(45deg, transparent 50%, var(--gold) 50%), linear-gradient(135deg, var(--gold) 50%, transparent 50%); background-position: calc(100% - 14px) 14px, calc(100% - 9px) 14px; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; }
+    option { color: #fff; background: #1a2634; }
+    .toggle-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .toggle-line label { margin: 0; }
+    .toggle { position: relative; width: 34px; height: 18px; flex: 0 0 auto; }
+    .toggle input { position: absolute; width: 0; height: 0; opacity: 0; }
+    .toggle span { position: absolute; inset: 0; border-radius: 999px; background: #263040; transition: .2s; }
+    .toggle span::before { content: ""; position: absolute; width: 12px; height: 12px; left: 3px; bottom: 3px; border-radius: 50%; background: #fff; transition: .2s; }
+    .toggle input:checked + span { background: var(--gold); }
+    .toggle input:checked + span::before { transform: translateX(16px); }
+    .hidden { display: none !important; }
+
+    .btn-generate { position: relative; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; margin-top: 18px; overflow: hidden; border: 1px solid rgba(201,168,76,.45); border-radius: 4px; color: var(--gold); background: var(--navy); font-size: 13px; font-weight: 900; letter-spacing: 1.4px; text-transform: uppercase; transition: transform .2s, color .3s, background .3s; }
+    .btn-generate:hover { color: var(--navy); background: var(--gold); transform: translateY(-1px); }
+    .btn-generate:active { transform: scale(.98); }
+    .btn-reset { display: block; width: 100%; margin: 8px 0 4px; border: 0; color: #72899e; background: transparent; font-size: 10px; }
+    .btn-reset:hover { color: var(--gold-light); }
+
+    .preview-area { position: relative; flex: 1; height: 100vh; overflow-y: auto; padding: 36px 20px 60px; background-color: #0a1018; background-image: radial-gradient(rgba(201,168,76,.13) 1px, transparent 1px); background-size: 30px 30px; }
+    .preview-header { max-width: 794px; margin: 0 auto 28px; color: var(--gold); font-size: 21px; font-weight: 800; letter-spacing: 4px; text-align: center; text-transform: uppercase; }
+    .preview-subtitle { display: none; }
+
+    #laudo { width: 794px; min-height: 1123px; margin: 0 auto; overflow: hidden; color: #1a1a1a; background: #fff; box-shadow: 0 20px 80px rgba(0,0,0,.5); font-family: "Segoe UI", Arial, sans-serif; font-size: 11px; -webkit-font-smoothing: antialiased; }
+    .l-header { display: flex; align-items: center; height: 100px; margin-bottom: 8px; overflow: visible; background: #fff; position: relative; }
+    .l-logo-area { display: flex; align-items: center; width: 245px; padding-left: 24px; }
+    .l-logo { width: 190px; height: 64px; }
+    .l-title { z-index: 1; flex: 1; color: var(--navy); font-size: 24px; font-weight: 800; letter-spacing: 2px; text-align: center; }
+    .l-header-right { position: relative; display: flex; align-items: center; align-self: stretch; justify-content: flex-end; width: 220px; padding-right: 25px; overflow: visible; }
+    .l-header-bg { position: absolute; inset: 0 0 0 auto; width: 221px; height: 100%; }
+    .l-dates { z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+    .l-date-box { display: flex; align-items: center; gap: 9px; }
+    .date-icon { display: grid; place-items: center; width: 23px; height: 23px; color: var(--gold); font-size: 19px; }
+    .l-date-label { color: #fff; font-size: 7px; letter-spacing: 1px; opacity: .78; }
+    .l-date-value { color: #fff; font-size: 12px; font-weight: 800; }
+
+    .l-info-bar { display: grid; grid-template-columns: 1.15fr 1fr 1.15fr 1fr; height: 60px; margin: 0 10px 10px; border: 1px solid #dde3ea; border-radius: 8px; background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,.03); }
+    .l-info-item { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; padding: 0 10px; }
+    .l-info-item:not(:last-child)::after { content: ""; position: absolute; top: 22%; right: 0; width: 1px; height: 56%; background: #dde3ea; }
+    .l-info-icon { display: grid; place-items: center; width: 25px; height: 25px; flex: 0 0 25px; border-radius: 7px; color: var(--navy); background: #edf2f6; font-size: 14px; font-weight: 900; }
+    .l-info-content { min-width: 0; }
+    .l-info-label { overflow: hidden; margin-bottom: 2px; color: #666; font-size: 7px; font-weight: 700; letter-spacing: .3px; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+    .l-info-value { overflow: hidden; color: var(--navy); font-size: 10px; font-weight: 800; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+
+    .l-status-bar { display: grid; grid-template-columns: 245px repeat(4, 1fr); align-items: center; gap: 0; min-height: 104px; margin: 15px 10px 5px; padding: 8px 12px; border: 1px solid #ff980077; border-radius: 12px; background: linear-gradient(135deg, #ffe0b2 0%, #fffaf3 100%); }
+    .l-status-bar.approved { border-color: #4caf5077; background: linear-gradient(135deg, #c8e6c9 0%, #f1fbf1 100%); }
+    .l-status-bar.rejected { border-color: #f4433677; background: linear-gradient(135deg, #ffcdd2 0%, #fff8f8 100%); }
+    .l-status-bar.info { border-color: #03a9f477; background: linear-gradient(135deg, #b3e5fc 0%, #f0f9ff 100%); }
+    .l-approved-box { display: flex; align-items: center; gap: 10px; width: 225px; min-height: 87px; margin-right: 14px; padding: 8px 10px; border: 2px solid var(--orange); border-radius: 8px; background: #fff3e0; }
+    .l-approved-box.approved { border-color: var(--green); background: #e8f5e9; }
+    .l-approved-box.rejected { border-color: var(--red); background: #ffebee; }
+    .l-approved-box.info { border-color: var(--blue); background: #e1f5fe; }
+    .l-check-circle { display: grid; place-items: center; width: 39px; height: 39px; flex: 0 0 39px; border-radius: 50%; color: #fff; background: var(--orange); font-size: 16px; font-weight: 900; }
+    .l-approved-box.approved .l-check-circle { background: var(--green); }
+    .l-approved-box.rejected .l-check-circle { background: var(--red); }
+    .l-approved-box.info .l-check-circle { background: var(--blue); }
+    .l-approved-text { min-width: 0; }
+    .l-approved-text .status { margin-bottom: 4px; color: #e65100; font-size: 13px; font-weight: 900; line-height: 1.08; }
+    .l-approved-box.approved .status { color: #2e7d32; }
+    .l-approved-box.rejected .status { color: #c62828; }
+    .l-approved-box.info .status { color: #0277bd; }
+    .l-approved-text .desc { color: #555; font-size: 7px; line-height: 1.25; }
+    .l-metric { min-width: 0; min-height: 70px; padding: 12px 9px; border-left: 1px solid #d7dfe6; }
+    .l-metric-label { margin-bottom: 5px; color: #71879a; font-size: 7px; font-weight: 800; letter-spacing: .55px; line-height: 1.15; text-transform: uppercase; }
+    .l-metric-value { overflow: hidden; color: var(--navy); font-size: 17px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .l-metric-value.small { font-size: 12px; }
+
+    .l-body { padding: 5px 20px 25px; }
+    .l-section { margin-top: 17px; }
+    .l-section-title { display: flex; align-items: center; gap: 8px; min-height: 35px; margin-bottom: 9px; padding: 0 12px; border-radius: 5px; color: var(--gold); background: var(--navy); font-size: 10px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
+    .l-section-title::before { content: "✦"; color: var(--gold); font-size: 13px; }
+    .l-section-title::after { content: none; }
+    .l-people { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 9px; }
+    .l-person { min-height: 125px; padding: 12px; border: 1px solid #dbe3ea; border-radius: 5px; }
+    .l-person.secondary { display: none; }
+    .l-person-name { margin-bottom: 10px; color: var(--navy); font-size: 13px; font-weight: 900; }
+    .l-person-data { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .l-person-data div { padding-top: 6px; border-top: 1px solid #e7edf2; }
+    .l-person-data small { display: block; color: #71879a; font-size: 7px; font-weight: 800; letter-spacing: .45px; text-transform: uppercase; }
+    .l-person-data strong { display: block; margin-top: 3px; color: var(--navy); font-size: 10px; }
+    .l-renda-box { min-height: 125px; padding: 11px 10px; color: #fff; background: var(--navy); }
+    .l-renda-title { margin-bottom: 12px; color: var(--gold); font-size: 9px; font-weight: 900; letter-spacing: .8px; }
+    .l-renda-subtitle { padding-bottom: 6px; border-bottom: 1px solid #27425c; color: #b9c9d7; font-size: 7px; font-weight: 800; }
+    .l-renda-row { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 6px; }
+    .l-renda-row span { padding: 5px; color: #7e9cb7; background: #152d45; font-size: 6px; }
+    .l-renda-row strong { display: block; margin-top: 3px; color: #fff; font-size: 9px; }
+    .l-renda-total { margin-top: 12px; text-align: center; }
+    .l-renda-total small { display: block; color: #8ca7bd; font-size: 6px; text-transform: uppercase; }
+    .l-renda-total strong { display: block; margin-top: 3px; color: #fff; font-size: 13px; }
+    .l-technical, .l-sales { padding: 14px; border: 1px solid #dbe3ea; border-radius: 5px; color: #31475b; line-height: 1.55; }
+    .l-technical::before { content: "◇"; margin-right: 12px; color: var(--gold); font-size: 22px; vertical-align: middle; }
+    .l-sales-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+    .l-sales-item { padding: 9px 12px; border: 1px solid #dbe3ea; border-radius: 5px; color: #65798b; font-size: 8px; }
+    .l-sales-item strong { color: var(--navy); }
+    .l-financial { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid #dbe3ea; }
+    .l-financial .l-metric { min-height: 70px; border-right: 1px solid #dbe3ea; border-left: 0; }
+    .l-financial .l-metric:last-child { border-right: 0; }
+    .l-financial .l-metric-value { font-size: 12px; }
+    .l-legal { margin-top: 14px; padding: 11px 12px; border-left: 3px solid var(--gold); color: #526b80; background: #f5f8fa; font-size: 9px; line-height: 1.5; }
+    .l-footer { display: flex; justify-content: space-between; gap: 10px; margin-top: 23px; padding-top: 10px; border-top: 1px solid #dbe3ea; color: #71879a; font-size: 8px; }
+    .l-footer strong { color: var(--navy); }
+
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .app { display: block; height: auto; min-height: 100vh; overflow: visible; }
+      .sidebar { width: 100%; min-width: 0; height: auto; max-height: none; overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); }
+      .preview-area { height: auto; min-height: 100vh; overflow: visible; padding-top: 28px; }
+    }
+    @media (max-width: 700px) {
+      .sidebar { padding: 15px; }
+      .row2, .row3 { grid-template-columns: 1fr; gap: 0; }
+      .preview-area { padding: 25px 10px 40px; }
+      .preview-header { font-size: 15px; letter-spacing: 2px; }
+      .preview-subtitle { font-size: 8px; }
+      #laudo { width: 100%; min-height: 0; }
+      .l-header { height: auto; min-height: 160px; flex-wrap: wrap; }
+      .l-logo-area { width: 50%; height: 78px; padding-left: 15px; }
+      .l-logo { width: 150px; }
+      .l-title { width: 50%; flex: 0 0 50%; font-size: 16px; }
+      .l-header-right { width: 100%; height: 74px; padding: 0 18px; border-top: 4px solid var(--gold); background: var(--navy); }
+      .l-header-bg { display: none; }
+      .l-dates { flex-direction: row; width: 100%; justify-content: space-between; }
+      .l-info-bar { grid-template-columns: 1fr 1fr; height: auto; }
+      .l-info-item { min-height: 58px; }
+      .l-info-item:nth-child(2) { border-right: 0; }
+      .l-info-item:nth-child(-n+2) { border-bottom: 1px solid #dde3ea; }
+      .l-info-item:nth-child(2)::after { display: none; }
+      .l-status-bar { grid-template-columns: 1fr 1fr; }
+      .l-approved-box { grid-column: 1 / -1; width: 100%; margin: 0 0 7px; }
+      .l-metric:nth-child(3) { border-left: 0; }
+      .l-people, .l-financial { grid-template-columns: 1fr 1fr; }
+      .l-financial .l-metric:nth-child(2) { border-right: 0; }
+      .l-financial .l-metric:nth-child(-n+2) { border-bottom: 1px solid #dbe3ea; }
+    }
+    @media print {
+      body { overflow: visible; background: #fff; }
+      .sidebar, .preview-header, .preview-subtitle { display: none !important; }
+      .app, .preview-area { display: block; width: 100%; height: auto; padding: 0; overflow: visible; background: #fff; }
+      #laudo { width: 210mm; min-height: 297mm; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <aside class="sidebar" aria-label="Dados do laudo">
+      <div class="sidebar-title"><span class="sidebar-title-main">Dados do Laudo</span><button class="btn-logout" type="button" id="demo-exit">↪ Sair</button></div>
+      <div class="sidebar-brand">
+        <svg class="brand-mark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="26" fill="#0d2137"/><path d="m16 35 16-15 16 15-3 3-13-12-13 12Z" fill="#d4af37"/><path d="M22 35h20v14H22Z" fill="#d4af37"/><path d="M29 49V39h6v10" fill="#0d2137"/></svg>
+        <span><strong>LumeHabita</strong> · crédito imobiliário</span>
+      </div>
+      <p class="demo-note">Interface demonstrativa com dados fictícios. O MVP original permanece protegido e separado.</p>
+
+      <form id="demo-form">
+        <div class="section-label">Datas</div>
+        <div class="section-content">
+          <div class="row2">
+            <div class="field"><label for="dataAnalise">Data da análise</label><input id="dataAnalise" value="17/09/2026"></div>
+            <div class="field"><label for="dataValidade">Validade</label><input id="dataValidade" value="17/10/2026"></div>
+          </div>
+        </div>
+
+        <div class="section-label">Empreendimento</div>
+        <div class="section-content">
+          <div class="field"><label for="builder">Construtora / parceiro</label><input id="builder" value="Horizonte Desenvolvimento"></div>
+          <div class="field"><label for="development">Empreendimento</label><input id="development" value="Parque das Águas"></div>
+          <div class="row2">
+            <div class="field"><label for="city">Município do imóvel</label><select id="city"><option>Nova Iguaçu</option><option>Maricá</option><option>Rio de Janeiro</option><option>Niterói</option></select></div>
+            <div class="field"><label for="propertyType">Modalidade</label><select id="propertyType"><option>Planta</option><option>Novo</option><option>Usado</option></select></div>
+          </div>
+        </div>
+
+        <div class="section-label">1º Proponente</div>
+        <div class="section-content">
+          <div class="field"><label for="applicant">Nome completo</label><input id="applicant" value="Mariana Oliveira"></div>
+          <div class="row2">
+            <div class="field"><label for="birthDate">Data de nascimento</label><input id="birthDate" placeholder="DD/MM/AAAA" value="12/04/1988"></div>
+            <div class="field"><label for="cpf">CPF</label><input id="cpf" value="***.***.***-**"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="profession">Profissão</label><input id="profession" value="Analista administrativa"></div>
+            <div class="field"><label for="income">Renda comprovada</label><input id="income" value="R$ 8.500,00"></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="dependents">Dependente</label><select id="dependents"><option>NÃO</option><option>SIM</option></select></div>
+            <div class="field"><label for="cotista">Cotista</label><select id="cotista"><option>NÃO</option><option>SIM</option></select></div>
+          </div>
+          <div class="row2">
+            <div class="field"><label for="incomeType">Tipo de renda</label><select id="incomeType"><option>FORMAL</option><option>INFORMAL</option><option>MISTA</option></select></div>
+            <div class="field"><label for="irpf">Declara IRPF</label><select id="irpf"><option>SIM</option><option>NÃO</option></select></div>
+          </div>
+          <div class="field"><label for="fgts">Utilizando FGTS</label><select id="fgts"><option>NÃO</option><option>SIM</option></select></div>
+        </div>
+
+        <div class="section-label toggle-line"><span>2º Proponente (opcional)</span><label class="toggle"><input id="hasP2" type="checkbox"><span></span></label></div>
+        <div class="section-content hidden" id="p2-fields">
+          <div class="field"><label for="applicant2">Nome completo</label><input id="applicant2" placeholder="NOME DO PROPONENTE"></div>
+          <div class="row2"><div class="field"><label for="income2">Renda comprovada</label><input id="income2" placeholder="R$ 0,00"></div><div class="field"><label for="cpf2">CPF</label><input id="cpf2" placeholder="***.***.***-**"></div></div>
+        </div>
+
+        <div class="section-label">Condições aprovadas</div>
+        <div class="section-content">
+          <div class="field"><label for="valuation">Valor de avaliação do imóvel</label><input id="valuation" value="R$ 320.000,00"></div>
+          <div class="row2">
+            <div class="field"><label for="financing">Valor do financiamento</label><input id="financing" value="R$ 256.000,00"></div>
+            <div class="field"><label for="subsidy">Subsídio concedido</label><input id="subsidy" value="R$ 0,00"></div>
+          </div>
+          <div class="field"><label for="total">Total dos valores</label><input id="total" value="R$ 256.000,00" readonly></div>
+          <div class="row2"><div class="field"><label for="term">Prazo (meses)</label><input id="term" value="360 meses"></div><div class="field"><label for="table">Tabela</label><select id="table"><option>PRICE</option><option>SAC</option></select></div></div>
+          <div class="row2"><div class="field"><label for="firstPayment">1ª prestação</label><input id="firstPayment" value="R$ 1.850,00"></div><div class="field"><label for="siricPayment">Parcela SIRIC</label><input id="siricPayment" value="R$ 1.420,00"></div></div>
+          <div class="row2"><div class="field"><label for="rangeForm">Enquadramento / faixa</label><select id="rangeForm"><option>FAIXA 3</option><option>FAIXA 2</option><option>SBPE</option></select></div><div class="field"><label for="siricQuota">Cota SIRIC (%)</label><input id="siricQuota" value="0%" readonly></div></div>
+        </div>
+
+        <div class="section-label">Resultado</div>
+        <div class="section-content">
+          <div class="field"><label for="status">Resultado da análise</label><select id="status"><option value="approved">APROVADO</option><option value="pending" selected>APROVADO C/ PENDÊNCIA</option><option value="rejected">REPROVADO</option><option value="margin">AV. CONDICIONADA MARGEM</option></select></div>
+          <div class="row3">
+            <div class="field"><label for="quotaResult">Cota financ. (%)</label><input id="quotaResult" value="80%" readonly></div>
+            <div class="field"><label for="interest">Juros (a.a.)</label><input id="interest" value="5,64%"></div>
+            <div class="field"><label for="range">Faixa MCMV</label><select id="range"><option>FAIXA 1</option><option>FAIXA 2</option><option selected>FAIXA 3</option><option>FAIXA 4</option><option>SBPE</option></select></div>
+          </div>
+          <div class="field"><label for="incomeTotal">Renda total apurada</label><input id="incomeTotal" value="R$ 8.500,00" readonly></div>
+        </div>
+
+        <div class="section-label">Observações</div>
+        <div class="section-content"><div class="row2"><div class="field"><label for="restriction">Consulta restrição</label><select id="restriction"><option>SEM APONTAMENTOS</option><option>COM APONTAMENTO</option></select></div><div class="field"><label for="hasProperty">Possui imóvel</label><select id="hasProperty"><option>NÃO</option><option>SIM</option></select></div></div><div class="field"><label for="observation">Observações de venda</label><textarea id="observation">Enviar comprovante de residência atualizado antes da assinatura.</textarea></div></div>
+
+        <div class="section-label">Analista</div>
+        <div class="section-content"><div class="field"><label for="analyst">Nome do analista</label><input id="analyst" value="Equipe LumeHabita"></div></div>
+        <button class="btn-generate" type="button" id="print">Gerar e imprimir demonstração</button>
+        <button class="btn-reset" type="button" id="reset">Restaurar dados fictícios</button>
+      </form>
+    </aside>
+
+    <section class="preview-area" aria-label="Preview do laudo">
+      <div class="preview-header">Preview do Laudo</div>
+      <div class="preview-subtitle">Demo pública · dados fictícios · experiência equivalente ao MVP</div>
+      <article id="laudo">
+        <header class="l-header">
+          <div class="l-logo-area">
+            <svg class="l-logo" viewBox="0 0 560 132" role="img" aria-label="LumeHabita">
+              <circle cx="64" cy="66" r="48" fill="#d4af37"/><path d="m30 71 34-32 34 32-6 6-28-26-28 26Z" fill="#0d2137"/><path d="M37 71h54v29H37Z" fill="#0d2137"/><path d="M58 100V78h14v22" fill="#d4af37"/><circle cx="64" cy="30" r="5" fill="#d4af37"/>
+              <text x="133" y="76" fill="#0d2137" font-family="Arial, Helvetica, sans-serif" font-size="43" font-weight="800" letter-spacing="-1.5">LumeHabita</text>
+            </svg>
+          </div>
+          <div class="l-title">LAUDO DE ANÁLISE</div>
+          <div class="l-header-right">
+            <svg class="l-header-bg" viewBox="0 0 220 100" preserveAspectRatio="none" aria-hidden="true"><polygon points="32,0 220,0 220,100 10,100" fill="#0d2137"/><polygon points="26,0 30,0 8,100 4,100" fill="#d4af37"/></svg>
+            <div class="l-dates">
+              <div class="l-date-box"><span class="date-icon">▣</span><div><div class="l-date-label">DATA DA ANÁLISE</div><div class="l-date-value" id="view-dataAnalise">17/09/2026</div></div></div>
+              <div class="l-date-box"><span class="date-icon">◷</span><div><div class="l-date-label">VALIDADE</div><div class="l-date-value" id="view-dataValidade">17/10/2026</div></div></div>
+            </div>
+          </div>
+        </header>
+
+        <div class="l-info-bar">
+          <div class="l-info-item"><span class="l-info-icon">▦</span><div class="l-info-content"><div class="l-info-label">CONSTRUTORA / PARCEIRO</div><div class="l-info-value" id="view-builder">HORIZONTE DESENVOLVIMENTO</div></div></div>
+          <div class="l-info-item"><span class="l-info-icon">⌂</span><div class="l-info-content"><div class="l-info-label">EMPREENDIMENTO</div><div class="l-info-value" id="view-development">PARQUE DAS ÁGUAS</div></div></div>
+          <div class="l-info-item"><span class="l-info-icon">⌖</span><div class="l-info-content"><div class="l-info-label">MUNICÍPIO DO IMÓVEL</div><div class="l-info-value" id="view-city">NOVA IGUAÇU</div></div></div>
+          <div class="l-info-item"><span class="l-info-icon">✎</span><div class="l-info-content"><div class="l-info-label">MODALIDADE DO IMÓVEL</div><div class="l-info-value" id="view-propertyType">PLANTA</div></div></div>
+        </div>
+
+        <div class="l-status-bar" id="view-status-bar">
+          <div class="l-approved-box" id="view-status-box"><span class="l-check-circle" id="view-status-icon">!</span><div class="l-approved-text"><div class="status" id="view-status-text">APROVADO C/ PENDÊNCIA</div><div class="desc" id="view-status-desc">Aprovação condicionada à resolução de pendências documentais.</div></div></div>
+          <div class="l-metric"><div class="l-metric-label">COTA FINANCIAMENTO</div><div class="l-metric-value" id="view-quota">80%</div></div>
+          <div class="l-metric"><div class="l-metric-label">JUROS A.A.</div><div class="l-metric-value" id="view-interest">5,64%</div></div>
+          <div class="l-metric"><div class="l-metric-label">FAIXA MCMV</div><div class="l-metric-value small" id="view-range">FAIXA 3</div></div>
+          <div class="l-metric"><div class="l-metric-label">RENDA TOTAL APURADA</div><div class="l-metric-value small" id="view-income">R$ 8.500,00</div></div>
+        </div>
+
+        <div class="l-body">
+          <section class="l-section"><h2 class="l-section-title">Dados dos proponentes</h2><div class="l-people">
+            <div class="l-person"><div class="l-person-name" id="view-applicant">Mariana Oliveira</div><div class="l-person-data"><div><small>Data de nascimento</small><strong id="view-birthDate">12/04/1988</strong></div><div><small>Idade</small><strong>38 anos</strong></div><div><small>CPF</small><strong id="view-cpf">***.***.***-**</strong></div><div><small>Profissão</small><strong id="view-profession">Analista administrativa</strong></div><div><small>Renda comprovada</small><strong id="view-person-income">R$ 8.500,00</strong></div><div><small>Tipo de renda</small><strong id="view-incomeType">FORMAL</strong></div><div><small>Dependentes</small><strong id="view-dependents">NÃO</strong></div><div><small>Declara IRPF</small><strong id="view-irpf">SIM</strong></div><div><small>FGTS</small><strong id="view-fgts">NÃO</strong></div></div></div>
+            <div class="l-renda-box" id="view-renda-box"><div class="l-renda-title">♧ &nbsp; RESUMO DE RENDA</div><div class="l-renda-subtitle">1º PROPONENTE</div><div class="l-renda-row"><span>DEPENDENTE<strong id="view-dependents2">NÃO</strong></span><span>TIPO DEP.<strong>—</strong></span></div><div class="l-renda-row"><span>COTISTA<strong>NÃO</strong></span><span>FGTS<strong>NÃO</strong></span></div><div class="l-renda-total"><small>RENDA TOTAL APURADA</small><strong id="view-income2">R$ 8.500,00</strong></div></div>
+            <div class="l-person secondary" id="view-person2"><div class="l-person-name" id="view-applicant2">—</div><div class="l-person-data"><div><small>CPF</small><strong id="view-cpf2">—</strong></div><div><small>Renda</small><strong id="view-income2b">—</strong></div></div></div>
+          </div></section>
+
+          <section class="l-section"><h2 class="l-section-title">Condições aprovadas</h2><div class="l-financial">
+            <div class="l-metric"><div class="l-metric-label">VALOR DE AVALIAÇÃO</div><div class="l-metric-value" id="view-valuation">R$ 320.000,00</div></div>
+            <div class="l-metric"><div class="l-metric-label">FINANCIAMENTO</div><div class="l-metric-value" id="view-financing">R$ 256.000,00</div></div>
+            <div class="l-metric"><div class="l-metric-label">SUBSÍDIO</div><div class="l-metric-value" id="view-subsidy">R$ 0,00</div></div>
+            <div class="l-metric"><div class="l-metric-label">TOTAL DOS VALORES</div><div class="l-metric-value" id="view-total">R$ 256.000,00</div></div>
+          </div></section>
+
+          <section class="l-section"><h2 class="l-section-title">Condições do contrato</h2><div class="l-financial">
+            <div class="l-metric"><div class="l-metric-label">PRAZO</div><div class="l-metric-value small" id="view-term">360 meses</div></div>
+            <div class="l-metric"><div class="l-metric-label">TABELA</div><div class="l-metric-value small" id="view-table">PRICE</div></div>
+            <div class="l-metric"><div class="l-metric-label">PARCELA INICIAL</div><div class="l-metric-value small">R$ 1.850,00</div></div>
+            <div class="l-metric"><div class="l-metric-label">SIRIC</div><div class="l-metric-value small">R$ 1.420,00</div></div>
+          </div></section>
+
+          <section class="l-section"><h2 class="l-section-title">Parecer técnico</h2><div class="l-technical">Cliente enquadrado no programa habitacional, com comprometimento dentro dos limites estabelecidos pela política de crédito. Operação viável, com documentação conforme a análise aprovada.</div></section>
+          <section class="l-section"><h2 class="l-section-title">Observações / informações setor de vendas</h2><div class="l-sales"><div class="l-sales-grid"><div class="l-sales-item">Consulta restrição: <strong>Sem apontamentos</strong></div><div class="l-sales-item">Possui imóvel: <strong>Não informado</strong></div></div><div class="l-sales-item">Observações: <strong id="view-sales-observation">Enviar comprovante de residência atualizado antes da assinatura.</strong></div></div></section>
+
+          <div class="l-legal"><strong>Parecer:</strong> <span id="view-opinion">operação enquadrada nas políticas de crédito vigentes, condicionada à regularização da pendência documental indicada pelo analista.</span></div>
+          <div class="l-legal"><strong>Observação:</strong> <span id="view-observation">Enviar comprovante de residência atualizado antes da assinatura.</span></div>
+          <footer class="l-footer"><span>Documento demonstrativo · sem validade operacional</span><span>Analista: <strong id="view-analyst">Equipe LumeHabita</strong></span></footer>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const initial = {
+      dataAnalise: '17/09/2026', dataValidade: '17/10/2026', builder: 'Horizonte Desenvolvimento', development: 'Parque das Águas',
+      city: 'Nova Iguaçu', propertyType: 'Planta', applicant: 'Mariana Oliveira', birthDate: '12/04/1988', cpf: '***.***.***-**', profession: 'Analista administrativa', income: 'R$ 8.500,00', incomeType: 'FORMAL',
+      dependents: 'NÃO', cotista: 'NÃO', irpf: 'SIM', fgts: 'NÃO', valuation: 'R$ 320.000,00', financing: 'R$ 256.000,00', subsidy: 'R$ 0,00', total: 'R$ 256.000,00', term: '360 meses', table: 'PRICE', firstPayment: 'R$ 1.850,00', siricPayment: 'R$ 1.420,00', rangeForm: 'FAIXA 3', siricQuota: '0%',
+      status: 'pending', quotaResult: '80%', interest: '5,64%', range: 'FAIXA 3', incomeTotal: 'R$ 8.500,00', restriction: 'SEM APONTAMENTOS', hasProperty: 'NÃO', observation: 'Enviar comprovante de residência atualizado antes da assinatura.', analyst: 'Equipe LumeHabita'
+    };
+    const $ = (id) => document.getElementById(id);
+    const fieldIds = Object.keys(initial);
+    const parseMoney = (value) => Number.parseFloat(String(value).replace(/[^\d,]/g, '').replace(',', '.')) || 0;
+    const formatMoney = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const text = (value, fallback = '—') => String(value || '').trim() || fallback;
+
+    const statusConfig = {
+      approved: { box: 'approved', bar: 'approved', icon: '✓', title: 'APROVADO', desc: 'Operação enquadrada nas políticas de crédito vigentes.', opinion: 'operação enquadrada nas políticas de crédito vigentes.' },
+      pending: { box: '', bar: '', icon: '!', title: 'APROVADO C/ PENDÊNCIA', desc: 'Aprovação condicionada à resolução de pendências documentais.', opinion: 'operação enquadrada nas políticas de crédito vigentes, condicionada à regularização da pendência documental indicada pelo analista.' },
+      rejected: { box: 'rejected', bar: 'rejected', icon: '×', title: 'REPROVADO', desc: 'Operação não atende aos critérios de elegibilidade atuais.', opinion: 'operação não atende aos critérios de elegibilidade atuais.' },
+      margin: { box: 'info', bar: 'info', icon: 'i', title: 'AV. CONDICIONADA MARGEM', desc: 'Análise condicionada à margem consignável disponível.', opinion: 'análise condicionada à confirmação da margem consignável disponível.' }
+    };
+
+    function updatePreview() {
+      ['dataAnalise','dataValidade','builder','development','city','propertyType','applicant','birthDate','cpf','profession','incomeType','dependents','irpf','fgts','valuation','financing','subsidy','term','table','interest','range','observation','analyst'].forEach((id) => {
+        const target = $('view-' + id);
+        if (target) target.textContent = text($(id).value);
+      });
+      $('view-builder').textContent = text($('builder').value).toUpperCase();
+      $('view-development').textContent = text($('development').value).toUpperCase();
+      $('view-city').textContent = text($('city').value).toUpperCase();
+      $('view-propertyType').textContent = text($('propertyType').value).toUpperCase();
+      $('view-incomeType').textContent = text($('incomeType').value).toUpperCase();
+      $('view-person-income').textContent = text($('income').value);
+      $('view-range').textContent = text($('range').value).toUpperCase();
+      $('view-analyst').textContent = text($('analyst').value);
+      $('view-observation').textContent = text($('observation').value, 'Nenhuma observação registrada.');
+
+      const financing = parseMoney($('financing').value);
+      const subsidy = parseMoney($('subsidy').value);
+      const valuation = parseMoney($('valuation').value);
+      const income = parseMoney($('income').value) + ($('hasP2').checked ? parseMoney($('income2').value) : 0);
+      const total = financing + subsidy;
+      const quota = valuation ? Math.min(100, Math.round(financing / valuation * 100)) : 0;
+      $('total').value = formatMoney(total);
+      $('quotaResult').value = quota + '%';
+      $('incomeTotal').value = formatMoney(income);
+      $('view-total').textContent = formatMoney(total);
+      $('view-quota').textContent = quota + '%';
+      $('view-income').textContent = formatMoney(income);
+      $('view-income2').textContent = formatMoney(income);
+      $('view-dependents2').textContent = text($('dependents').value);
+      $('view-sales-observation').textContent = text($('observation').value, 'Nenhuma observação registrada.');
+
+      const config = statusConfig[$('status').value];
+      $('view-status-box').className = 'l-approved-box ' + config.box;
+      $('view-status-bar').className = 'l-status-bar ' + config.bar;
+      $('view-status-icon').textContent = config.icon;
+      $('view-status-text').textContent = config.title;
+      $('view-status-desc').textContent = config.desc;
+      $('view-opinion').textContent = config.opinion;
+
+      const hasP2 = $('hasP2').checked;
+      $('p2-fields').classList.toggle('hidden', !hasP2);
+      $('view-person2').style.display = hasP2 ? 'block' : 'none';
+      if (hasP2) {
+        $('view-applicant2').textContent = text($('applicant2').value);
+        $('view-cpf2').textContent = text($('cpf2').value);
+        $('view-income2b').textContent = text($('income2').value);
+      }
+    }
+
+    fieldIds.concat(['applicant2','cpf2','income2','hasP2']).forEach((id) => {
+      const field = $(id);
+      if (field) { field.addEventListener('input', updatePreview); field.addEventListener('change', updatePreview); }
+    });
+    document.querySelectorAll('.section-label:not(.toggle-line)').forEach((label) => label.addEventListener('click', () => label.classList.toggle('collapsed')));
+    $('print').addEventListener('click', () => window.print());
+    $('reset').addEventListener('click', () => {
+      Object.entries(initial).forEach(([id, value]) => { if ($(id)) $(id).value = value; });
+      $('hasP2').checked = false;
+      $('applicant2').value = '';
+      $('cpf2').value = '';
+      $('income2').value = '';
+      updatePreview();
+    });
+    updatePreview();
+  </script>
+</body>
+</html>
